@@ -2,13 +2,15 @@ module ModularBlog.Lib.Mucode where
 
 import Prelude
 
+import Control.Monad.Error.Class (throwError)
 import Data.Array as Array
 import Data.Either.Nested (type (\/))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from, to)
 import Data.List (List(..))
 import Data.String as String
 import Data.String.CodePoints (codePointFromChar)
-import Parsing (ParseError, Parser, runParser)
+import Data.Void (absurd)
+import Parsing (ParseError(..), Parser, position, runParser)
 import Parsing.Combinators (choice, try, (<|>))
 import Parsing.String (anyCodePoint, char, string)
 import Partial.Unsafe (unsafeCrashWith)
@@ -50,6 +52,20 @@ instance Decode String where
           -- everything else is parsed verbatim
           Cons <$> anyCodePoint <*> go unit
       ]
+
+instance Encode Void where
+  encode = absurd
+
+instance Decode Void where
+  parse _ = do
+    pos <- position
+    throwError (ParseError "cannot parse a term of type Void since no such term exists" pos)
+
+instance Encode (List a) where
+  encode = unsafeCrashWith "TODO"
+
+instance Decode (List a) where
+  parse = unsafeCrashWith "TODO"
 
 -- =============================================================================
 -- Generic_Encode and Generic_Decode
