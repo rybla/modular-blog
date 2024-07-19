@@ -9,13 +9,10 @@ import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArgumen
 import Data.List (List(..))
 import Data.String as String
 import Data.String.CodePoints (codePointFromChar)
-import Data.Void (absurd)
-import ModularBlog.Lib.Data.MyList (MyList)
 import Parsing (ParseError(..), Parser, position, runParser)
 import Parsing.Combinators (choice, try, (<|>))
 import Parsing.String (anyCodePoint, char, string)
 import Partial.Unsafe (unsafeCrashWith)
-import Type.Prelude (Proxy(..))
 
 -- =============================================================================
 

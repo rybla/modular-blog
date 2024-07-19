@@ -1,15 +1,14 @@
 module ModularBlog.Lib.Types where
 
-import Halogen
 import Prelude
 
+import Halogen as H
 import Control.Monad.State (State)
 import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.Newtype (class Newtype)
 import Data.Show.Generic (genericShow)
 import Effect.Aff (Aff)
-import ModularBlog.Lib.Data.MyList (MyList)
 import ModularBlog.Lib.Mucode as Mu
 import Type.Prelude (Proxy(..))
 
@@ -53,7 +52,7 @@ derive instance Newtype RenderNoteHTML _
 data Note a
   = Literal String
   | Styled Style (Note a)
-  | Grouped Group (MyList (Note a))
+  | Grouped Group (List (Note a))
   | Inject a
 
 derive instance Generic (Note a) _
@@ -95,12 +94,12 @@ instance Mu.Encode Group where
 instance Mu.Decode Group where
   parse x = Mu.generic_parse x
 
-type NoteHTML = ComponentHTML PageAction NoteSlots Aff
+type NoteHTML = H.ComponentHTML PageAction NoteSlots Aff
 
 type NoteSlots = (widget :: WidgetSlot WidgetSlotId)
 _widget = Proxy :: Proxy "widget"
 
-type WidgetSlot slotId = Slot WidgetQuery WidgetOutput slotId
+type WidgetSlot slotId = H.Slot WidgetQuery WidgetOutput slotId
 
 newtype WidgetSlotId = WidgetSlotId Int
 

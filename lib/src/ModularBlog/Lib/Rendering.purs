@@ -1,7 +1,5 @@
 module ModularBlog.Lib.Rendering where
 
-import Halogen
-import ModularBlog.Lib.Types
 import Prelude
 
 import Control.Monad.State (evalState)
@@ -9,10 +7,13 @@ import Data.Foldable (fold)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (over, unwrap)
 import Data.Traversable (sequence)
+import Effect (Effect)
 import Effect.Aff (Aff, error, throwError)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
+import ModularBlog.Lib.Types (Group, Note(..), NoteHTML, PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
+import Web.DOM as Web.DOM
 import Web.DOM.Element as Web.DOM.Element
 import Web.DOM.Node as Web.DOM.Node
 import Web.DOM.NonElementParentNode as Web.DOM.NonElementParentNode
@@ -24,23 +25,23 @@ import Web.HTML.Window as Web.HTML.Window
 -- Page
 -- =============================================================================
 
-component_Page :: Component PageQuery PageInput PageOutput Aff
-component_Page = mkComponent { initialState, eval, render }
+component_Page :: H.Component PageQuery PageInput PageOutput Aff
+component_Page = H.mkComponent { initialState, eval, render }
   where
   initialState { page } =
     { page }
 
-  eval = mkEval defaultEval { initialize = Just Initialize_PageAction, receive = Receive_PageAction >>> Just, handleAction = handleAction }
+  eval = H.mkEval H.defaultEval { initialize = Just Initialize_PageAction, receive = Receive_PageAction >>> Just, handleAction = handleAction }
 
   handleAction = case _ of
     Initialize_PageAction -> do
-      window <- Web.HTML.window # liftEffect
-      document <- window # Web.HTML.Window.document # liftEffect
-      placeholder <- document # getNodeById "placeholder" # liftEffect
-      placeholder_parent <- document # getParentNodeOfNodeById "placeholder" # liftEffect
-      _ <- placeholder_parent `Web.DOM.Node.removeChild` placeholder # liftEffect
+      window <- Web.HTML.window # H.liftEffect
+      document <- window # Web.HTML.Window.document # H.liftEffect
+      placeholder <- document # getNodeById "placeholder" # H.liftEffect
+      placeholder_parent <- document # getParentNodeOfNodeById "placeholder" # H.liftEffect
+      _ <- placeholder_parent `Web.DOM.Node.removeChild` placeholder # H.liftEffect
       pure unit
-    Receive_PageAction input -> put (initialState input)
+    Receive_PageAction input -> H.put (initialState input)
 
   render { page } =
     HH.div
@@ -50,12 +51,14 @@ component_Page = mkComponent { initialState, eval, render }
           # flip evalState initialRenderNoteEnv
       )
 
+getNodeById :: String -> Web.HTML.HTMLDocument -> Effect Web.DOM.Node
 getNodeById id =
   Web.HTML.HTMLDocument.toNonElementParentNode >>> pure
     >=> Web.DOM.NonElementParentNode.getElementById id
     >=> maybe (throwError (error ("element not found: #" <> id))) pure
     >=> Web.DOM.Element.toNode >>> pure
 
+getParentNodeOfNodeById :: String -> Web.HTML.HTMLDocument -> Effect Web.DOM.Node
 getParentNodeOfNodeById id =
   getNodeById id
     >=> Web.DOM.Node.parentNode
@@ -67,8 +70,8 @@ getParentNodeOfNodeById id =
 
 freshWidgetSlotId :: RenderM WidgetSlotId
 freshWidgetSlotId = do
-  { widgetSlotId } <- get
-  modify_ _ { widgetSlotId = widgetSlotId # over WidgetSlotId (_ + 1) }
+  { widgetSlotId } <- H.get
+  H.modify_ _ { widgetSlotId = widgetSlotId # over WidgetSlotId (_ + 1) }
   pure widgetSlotId
 
 renderNote :: forall extra. RenderNoteExtra extra => Note extra -> RenderM (Array NoteHTML)
