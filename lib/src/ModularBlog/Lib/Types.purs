@@ -9,6 +9,7 @@ import Data.List (List)
 import Data.Newtype (class Newtype)
 import Data.Show.Generic (genericShow)
 import Effect.Aff (Aff)
+import ModularBlog.Lib.Data.MyList (MyList)
 import ModularBlog.Lib.Mucode as Mu
 import Type.Prelude (Proxy(..))
 
@@ -52,7 +53,7 @@ derive instance Newtype RenderNoteHTML _
 data Note a
   = Literal String
   | Styled Style (Note a)
-  | Grouped Group (List (Note a))
+  | Grouped Group (MyList (Note a))
   | Inject a
 
 derive instance Generic (Note a) _

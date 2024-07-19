@@ -10,10 +10,12 @@ import Data.List (List(..))
 import Data.String as String
 import Data.String.CodePoints (codePointFromChar)
 import Data.Void (absurd)
+import ModularBlog.Lib.Data.MyList (MyList)
 import Parsing (ParseError(..), Parser, position, runParser)
 import Parsing.Combinators (choice, try, (<|>))
 import Parsing.String (anyCodePoint, char, string)
 import Partial.Unsafe (unsafeCrashWith)
+import Type.Prelude (Proxy(..))
 
 -- =============================================================================
 
@@ -61,11 +63,15 @@ instance Decode Void where
     pos <- position
     throwError (ParseError "cannot parse a term of type Void since no such term exists" pos)
 
-instance Encode (List a) where
-  encode = unsafeCrashWith "TODO"
+instance Encode a => Encode (List a) where
+  encode = case _ of
+    Nil -> generic_encode' (Constructor NoArguments :: Constructor "Nil" _)
+    Cons h t -> generic_encode' (Constructor (Product (Argument h) (Argument t)) :: Constructor "Cons" _)
 
-instance Decode (List a) where
-  parse = unsafeCrashWith "TODO"
+instance Decode a => Decode (List a) where
+  parse _ = (generic_parse' unit :: Parser String (Sum (Constructor "Nil" NoArguments) (Constructor "Cons" (Product (Argument a) (Argument (List a)))))) >>= case _ of
+    Inl _nil -> pure Nil
+    Inr (Constructor (Product (Argument h) (Argument t))) -> pure (Cons h t)
 
 -- =============================================================================
 -- Generic_Encode and Generic_Decode
