@@ -1,0 +1,15 @@
+{
+  "name": "modular-blog",
+  "type": "module",
+  "scripts": {
+    "build": "spago build",
+    "serve": "bun run build && echo TODO: serve"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "purescript": "^0.15.16-1",
+    "spago": "^0.93.37"
+  }
+}

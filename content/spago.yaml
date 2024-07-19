@@ -1,0 +1,10 @@
+package:
+  name: content
+  dependencies:
+    - console
+    - effect
+    - prelude
+    - lib
+  test:
+    main: Test.Main
+    dependencies: []
