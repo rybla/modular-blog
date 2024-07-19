@@ -1,4 +1,4 @@
-module ModularBlog.Lib.Mucode where
+module ModularBlog.Common.Mucode where
 
 import Prelude
 

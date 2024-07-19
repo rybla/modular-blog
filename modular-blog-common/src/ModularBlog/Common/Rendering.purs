@@ -1,4 +1,4 @@
-module ModularBlog.Lib.Rendering where
+module ModularBlog.Common.Rendering where
 
 import Prelude
 
@@ -12,7 +12,7 @@ import Effect.Aff (Aff, error, throwError)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import ModularBlog.Lib.Types (Group, Note(..), NoteHTML, PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
+import ModularBlog.Common.Types (Group, Note(..), NoteHTML, PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
 import Web.DOM as Web.DOM
 import Web.DOM.Element as Web.DOM.Element
 import Web.DOM.Node as Web.DOM.Node

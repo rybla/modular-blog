@@ -1,4 +1,4 @@
-module ModularBlog.Lib.Types where
+module ModularBlog.Common.Types where
 
 import Prelude
 
@@ -9,7 +9,7 @@ import Data.List (List)
 import Data.Newtype (class Newtype)
 import Data.Show.Generic (genericShow)
 import Effect.Aff (Aff)
-import ModularBlog.Lib.Mucode as Mu
+import ModularBlog.Common.Mucode as Mu
 import Type.Prelude (Proxy(..))
 
 -- =============================================================================

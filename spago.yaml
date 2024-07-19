@@ -1,9 +1,10 @@
 package:
   name: modular-blog
   dependencies:
-    - lib
-    - content
-    - app
+    - modular-blog-common
+    - modular-blog-content
+    - modular-blog-app
+    - modular-blog-generate
 workspace:
   packageSet:
     registry: 55.1.0

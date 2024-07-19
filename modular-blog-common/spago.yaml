@@ -1,5 +1,5 @@
 package:
-  name: lib
+  name: modular-blog-common
   dependencies:
     - console
     - effect
@@ -26,6 +26,3 @@ package:
     - uuid
     - variant
     - web-url
-  test:
-    main: Test.Main
-    dependencies: []

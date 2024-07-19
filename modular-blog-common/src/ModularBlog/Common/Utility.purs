@@ -1,4 +1,4 @@
-module ModularBlog.Lib.Utility where
+module ModularBlog.Common.Utility where
 
 import Prelude
 

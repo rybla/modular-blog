@@ -1,4 +1,4 @@
-module ModularBlog.Lib.Main where
+module ModularBlog.Common.Main where
 
 import Prelude
 
@@ -7,5 +7,5 @@ import Effect.Class.Console as Console
 
 main :: Effect Unit
 main = do
-  Console.log "[modular-blog.lib]"
+  Console.log "[modular-blog.Common]"
 

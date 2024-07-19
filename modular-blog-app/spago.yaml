@@ -1,9 +1,7 @@
 package:
-  name: gen
+  name: modular-blog-app
   dependencies:
     - console
     - effect
     - prelude
-  test:
-    main: Test.Main
-    dependencies: []
+    - modular-blog-common

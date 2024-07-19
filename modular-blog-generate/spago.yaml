@@ -1,0 +1,7 @@
+package:
+  name: modular-blog-generate
+  dependencies:
+    - console
+    - effect
+    - prelude
+    - modular-blog-common
