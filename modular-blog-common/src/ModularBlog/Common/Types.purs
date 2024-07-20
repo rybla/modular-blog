@@ -20,7 +20,7 @@ type Page =
   { name :: String
   , static_content :: String
   , stylesheet_hrefs :: Array String
-  , note :: Note Void
+  , note :: HyperNote
   }
 
 data PageQuery (a :: Type)

@@ -66,8 +66,10 @@ workspace:
         - modular-blog-generate
         - newtype
         - node-buffer
+        - node-child-process
         - node-event-emitter
         - node-fs
+        - node-os
         - node-path
         - node-streams
         - nonempty
@@ -80,6 +82,7 @@ workspace:
         - parsing
         - partial
         - pipes
+        - posix-types
         - prelude
         - profunctor
         - profunctor-lenses
@@ -117,6 +120,7 @@ workspace:
         - console
         - effect
         - modular-blog-common
+        - modular-blog-content
         - prelude
       test_dependencies: []
       build_plan:
@@ -172,6 +176,7 @@ workspace:
         - media-types
         - mmorph
         - modular-blog-common
+        - modular-blog-content
         - newtype
         - node-buffer
         - node-event-emitter
@@ -458,6 +463,9 @@ workspace:
         - console
         - effect
         - modular-blog-common
+        - modular-blog-content
+        - node-child-process
+        - node-fs
         - prelude
       test_dependencies: []
       build_plan:
@@ -513,10 +521,13 @@ workspace:
         - media-types
         - mmorph
         - modular-blog-common
+        - modular-blog-content
         - newtype
         - node-buffer
+        - node-child-process
         - node-event-emitter
         - node-fs
+        - node-os
         - node-path
         - node-streams
         - nonempty
@@ -529,6 +540,7 @@ workspace:
         - parsing
         - partial
         - pipes
+        - posix-types
         - prelude
         - profunctor
         - profunctor-lenses
@@ -1653,6 +1665,22 @@ packages:
       - nullable
       - st
       - unsafe-coerce
+  node-child-process:
+    type: registry
+    version: 11.1.0
+    integrity: sha256-vioMNgk8p+CGwlb6T3I3TIir27el85Yg4satLE/I89w=
+    dependencies:
+      - exceptions
+      - foreign
+      - foreign-object
+      - functions
+      - node-event-emitter
+      - node-fs
+      - node-os
+      - node-streams
+      - nullable
+      - posix-types
+      - unsafe-coerce
   node-event-emitter:
     type: registry
     version: 3.0.0
@@ -1686,6 +1714,30 @@ packages:
       - partial
       - prelude
       - strings
+      - unsafe-coerce
+  node-os:
+    type: registry
+    version: 5.1.0
+    integrity: sha256-K3gcu9AXanN1+qtk1900+Fi+CuO0s3/H/RMNRNgIzso=
+    dependencies:
+      - arrays
+      - bifunctors
+      - console
+      - control
+      - datetime
+      - effect
+      - either
+      - exceptions
+      - foldable-traversable
+      - foreign
+      - foreign-object
+      - functions
+      - maybe
+      - node-buffer
+      - nullable
+      - partial
+      - posix-types
+      - prelude
       - unsafe-coerce
   node-path:
     type: registry
@@ -1825,6 +1877,13 @@ packages:
       - tailrec
       - transformers
       - tuples
+  posix-types:
+    type: registry
+    version: 6.0.0
+    integrity: sha256-ZfFz8RR1lee/o/Prccyeut3Q+9tYd08mlR72sIh6GzA=
+    dependencies:
+      - maybe
+      - prelude
   prelude:
     type: registry
     version: 6.0.1

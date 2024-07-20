@@ -5,3 +5,6 @@ package:
     - effect
     - prelude
     - modular-blog-common
+    - modular-blog-content
+    - node-child-process
+    - node-fs

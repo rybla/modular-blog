@@ -23,11 +23,11 @@ pre-defined `Note`s and all the `Page`s that will become HTML endpoints.
 
 The `modular-blog-app` package contains the application code.
 
-The `modular-blog-gen` package contains runnable modules for generating and
+The `modular-blog-generate` package contains runnable modules for generating and
 bundling Purescript files in `modular-blog-app`.
   - runnable module `GenerateEndpoints` that for each `Page` in `content`:
     - import the `Page`
-    - generate a runnable module in `app` of the same name
+    - generate a runnable module in `modular-blog-app` of the same name
   - runnable module `BundleApp` that for each `Page` in `content`:
     - use spago to bundle the runnable module of the `Page` in
       `modular-blog-app` to the appropriate location in `docs/`

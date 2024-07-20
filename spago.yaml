@@ -1,9 +1,9 @@
 package:
   name: modular-blog
   dependencies:
+    - modular-blog-app
     - modular-blog-common
     - modular-blog-content
-    - modular-blog-app
     - modular-blog-generate
 workspace:
   packageSet:

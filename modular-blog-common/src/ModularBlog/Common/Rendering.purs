@@ -37,9 +37,9 @@ component_Page = H.mkComponent { initialState, eval, render }
     Initialize_PageAction -> do
       window <- Web.HTML.window # H.liftEffect
       document <- window # Web.HTML.Window.document # H.liftEffect
-      placeholder <- document # getNodeById "placeholder" # H.liftEffect
-      placeholder_parent <- document # getParentNodeOfNodeById "placeholder" # H.liftEffect
-      _ <- placeholder_parent `Web.DOM.Node.removeChild` placeholder # H.liftEffect
+      static_content <- document # getNodeById "static_content" # H.liftEffect
+      static_content_parent <- document # getParentNodeOfNodeById "static_content" # H.liftEffect
+      _ <- static_content_parent `Web.DOM.Node.removeChild` static_content # H.liftEffect
       pure unit
     Receive_PageAction input -> H.put (initialState input)
 

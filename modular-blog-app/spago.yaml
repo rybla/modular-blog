@@ -5,3 +5,4 @@ package:
     - effect
     - prelude
     - modular-blog-common
+    - modular-blog-content
