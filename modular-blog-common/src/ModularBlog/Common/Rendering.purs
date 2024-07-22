@@ -19,11 +19,12 @@ import Web.DOM.Node as Web.DOM.Node
 import Web.DOM.NonElementParentNode as Web.DOM.NonElementParentNode
 import Web.HTML as Web.HTML
 import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
-import Web.HTML.Window as Web.HTML.Window
 
 -- =============================================================================
 -- Page
 -- =============================================================================
+
+foreign import removeElementFromBodyById :: String -> Effect Unit
 
 component_Page :: H.Component PageQuery PageInput PageOutput Aff
 component_Page = H.mkComponent { initialState, eval, render }
@@ -35,11 +36,7 @@ component_Page = H.mkComponent { initialState, eval, render }
 
   handleAction = case _ of
     Initialize_PageAction -> do
-      window <- Web.HTML.window # H.liftEffect
-      document <- window # Web.HTML.Window.document # H.liftEffect
-      static_content <- document # getNodeById "static_content" # H.liftEffect
-      static_content_parent <- document # getParentNodeOfNodeById "static_content" # H.liftEffect
-      _ <- static_content_parent `Web.DOM.Node.removeChild` static_content # H.liftEffect
+      removeElementFromBodyById "static_content" # H.liftEffect
       pure unit
     Receive_PageAction input -> H.put (initialState input)
 
@@ -48,8 +45,11 @@ component_Page = H.mkComponent { initialState, eval, render }
       []
       ( page.note
           # renderNote
-          # flip evalState initialRenderNoteEnv
+          # runRenderM
       )
+
+runRenderM :: forall a. RenderM a -> a
+runRenderM = flip evalState initialRenderNoteEnv
 
 getNodeById :: String -> Web.HTML.HTMLDocument -> Effect Web.DOM.Node
 getNodeById id =

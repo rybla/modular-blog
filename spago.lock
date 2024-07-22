@@ -3,6 +3,7 @@ workspace:
     modular-blog:
       path: ./
       dependencies:
+        - arrays
         - modular-blog-app
         - modular-blog-common
         - modular-blog-content
@@ -122,6 +123,7 @@ workspace:
         - modular-blog-common
         - modular-blog-content
         - prelude
+        - web-url
       test_dependencies: []
       build_plan:
         - aff

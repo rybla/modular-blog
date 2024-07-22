@@ -3,16 +3,24 @@ module ModularBlog.Common.Mucode where
 import Prelude
 
 import Control.Monad.Error.Class (throwError)
-import Data.Array as Array
+import Control.Monad.ST (ST)
+import Control.Monad.ST as ST
+import Control.Monad.Trans.Class (lift)
+import Data.Array.ST as Array.ST
 import Data.Either.Nested (type (\/))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from, to)
 import Data.List (List(..))
 import Data.String as String
 import Data.String.CodePoints (codePointFromChar)
-import Parsing (ParseError(..), Parser, position, runParser)
-import Parsing.Combinators (choice, try, (<|>))
-import Parsing.String (anyCodePoint, char, string)
+import Parsing (ParseError(..), ParserT, position, runParserT)
+import Parsing.Combinators ((<|>))
+import Parsing.String (anyCodePoint, string)
 import Partial.Unsafe (unsafeCrashWith)
+
+-- =============================================================================
+
+-- type Parser = ParserT String Effect
+type Parser a = forall r. ParserT String (ST r) a
 
 -- =============================================================================
 
@@ -20,10 +28,15 @@ class Encode a where
   encode :: a -> String
 
 class Decode a where
-  parse :: Unit -> Parser String a
+  parse :: Unit -> Parser a
 
 decode :: forall a. Decode a => String -> ParseError \/ a
-decode s = runParser s (parse unit)
+decode s =
+  let
+    st_err_a :: forall r. ST r (ParseError \/ a)
+    st_err_a = s # flip runParserT (parse unit :: Parser a)
+  in
+    ST.run st_err_a
 
 -- =============================================================================
 -- standard instances
@@ -35,22 +48,26 @@ instance Encode String where
     trim n s = s # String.take (String.length s - n) # String.drop n
 
 instance Decode String where
-  parse _ = go unit <#> Array.fromFoldable >>> String.fromCodePointArray
-    where
-    doublequote_codepoint = '"' # codePointFromChar
-    go _ = choice
-      [ try do
-          -- end string at: "
-          char '"' # void
-          pure Nil
-      , try do
-          -- escape: \" ~> "
-          string "\\\"" # void
-          Cons doublequote_codepoint <$> go unit
-      , do
-          -- everything else is parsed verbatim
-          Cons <$> anyCodePoint <*> go unit
-      ]
+  parse _ = do
+    cps <- Array.ST.new # lift
+    let
+      go = do
+        cp1 <- anyCodePoint
+        case unit of
+          _ | cp1 == ('"' # codePointFromChar) -> pure unit
+          _ | cp1 == ('\\' # codePointFromChar) -> do
+            anyCodePoint >>= \cp2 -> cps # Array.ST.push cp2 # lift # void
+            go
+          _ -> do
+            cps # Array.ST.push cp1 # lift # void
+            go
+    go
+    cps' <- cps # Array.ST.unsafeFreeze # lift
+    pure (cps' # String.fromCodePointArray)
+
+-- pure _ = STArray
+--   where 
+--   go = 
 
 instance Encode Void where
   encode = absurd
@@ -66,7 +83,7 @@ instance Encode a => Encode (List a) where
     Cons h t -> generic_encode' (Constructor (Product (Argument h) (Argument t)) :: Constructor "Cons" _)
 
 instance Decode a => Decode (List a) where
-  parse _ = (generic_parse' unit :: Parser String (Sum (Constructor "Nil" NoArguments) (Constructor "Cons" (Product (Argument a) (Argument (List a)))))) >>= case _ of
+  parse _ = (generic_parse' unit :: Parser (Sum (Constructor "Nil" NoArguments) (Constructor "Cons" (Product (Argument a) (Argument (List a)))))) >>= case _ of
     Inl _nil -> pure Nil
     Inr (Constructor (Product (Argument h) (Argument t))) -> pure (Cons h t)
 
@@ -81,10 +98,10 @@ class Generic_EncodeArgs a where
   generic_encodeArgs :: a -> String
 
 class Generic_Decode a where
-  generic_parse' :: Unit -> Parser String a
+  generic_parse' :: Unit -> Parser a
 
 class Generic_DecodeArgs a where
-  generic_parseArgs :: Unit -> Parser String a
+  generic_parseArgs :: Unit -> Parser a
 
 instance Generic_Encode NoConstructors where
   generic_encode' x = generic_encode' x
@@ -135,5 +152,5 @@ instance Decode a => Generic_DecodeArgs (Argument a) where
 generic_encode :: forall a rep. Generic a rep => Generic_Encode rep => a -> String
 generic_encode x = generic_encode' (from x)
 
-generic_parse :: forall a rep. Generic a rep => Generic_Decode rep => Unit -> Parser String a
+generic_parse :: forall a rep. Generic a rep => Generic_Decode rep => Unit -> Parser a
 generic_parse x = generic_parse' x <#> to

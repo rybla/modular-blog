@@ -4,8 +4,10 @@
   "scripts": {
     "build.spago": "spago build",
     "build.GeneratePages": "spago run -p modular-blog-generate -m ModularBlog.Generate.GeneratePages",
+    "build.Index": "bun spago bundle -p modular-blog-app --module ModularBlog.App.Index --outfile ../docs/main.js --bundle-type app",
     "build": "bun run build.spago && bun run build.GeneratePages",
-    "serve": "bun run build && http-server ./docs"
+    "serve": "http-server ./docs",
+    "launch": "bun run build && bun run serve"
   },
   "devDependencies": {
     "@types/bun": "latest",

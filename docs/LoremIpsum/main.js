@@ -72,10 +72,10 @@
     return map(dictFunctor)($$const(unit));
   };
   var voidLeft = function(dictFunctor) {
-    var map110 = map(dictFunctor);
+    var map19 = map(dictFunctor);
     return function(f) {
       return function(x) {
-        return map110($$const(x))(f);
+        return map19($$const(x))(f);
       };
     };
   };
@@ -90,20 +90,20 @@
   };
   var applySecond = function(dictApply) {
     var apply1 = apply(dictApply);
-    var map20 = map(dictApply.Functor0());
+    var map19 = map(dictApply.Functor0());
     return function(a2) {
       return function(b2) {
-        return apply1(map20($$const(identity2))(a2))(b2);
+        return apply1(map19($$const(identity2))(a2))(b2);
       };
     };
   };
   var lift2 = function(dictApply) {
     var apply1 = apply(dictApply);
-    var map20 = map(dictApply.Functor0());
+    var map19 = map(dictApply.Functor0());
     return function(f) {
       return function(a2) {
         return function(b2) {
-          return apply1(map20(f)(a2))(b2);
+          return apply1(map19(f)(a2))(b2);
         };
       };
     };
@@ -114,7 +114,7 @@
     return dict.pure;
   };
   var unless = function(dictApplicative) {
-    var pure14 = pure(dictApplicative);
+    var pure13 = pure(dictApplicative);
     return function(v) {
       return function(v1) {
         if (!v) {
@@ -122,7 +122,7 @@
         }
         ;
         if (v) {
-          return pure14(unit);
+          return pure13(unit);
         }
         ;
         throw new Error("Failed pattern match at Control.Applicative (line 68, column 1 - line 68, column 65): " + [v.constructor.name, v1.constructor.name]);
@@ -130,7 +130,7 @@
     };
   };
   var when = function(dictApplicative) {
-    var pure14 = pure(dictApplicative);
+    var pure13 = pure(dictApplicative);
     return function(v) {
       return function(v1) {
         if (v) {
@@ -138,7 +138,7 @@
         }
         ;
         if (!v) {
-          return pure14(unit);
+          return pure13(unit);
         }
         ;
         throw new Error("Failed pattern match at Control.Applicative (line 63, column 1 - line 63, column 63): " + [v.constructor.name, v1.constructor.name]);
@@ -147,10 +147,10 @@
   };
   var liftA1 = function(dictApplicative) {
     var apply2 = apply(dictApplicative.Apply0());
-    var pure14 = pure(dictApplicative);
+    var pure13 = pure(dictApplicative);
     return function(f) {
       return function(a2) {
-        return apply2(pure14(f))(a2);
+        return apply2(pure13(f))(a2);
       };
     };
   };
@@ -171,16 +171,6 @@
       return function(g) {
         return function(a2) {
           return bindFlipped12(f)(g(a2));
-        };
-      };
-    };
-  };
-  var composeKleisli = function(dictBind) {
-    var bind16 = bind(dictBind);
-    return function(f) {
-      return function(g) {
-        return function(a2) {
-          return bind16(f(a2))(g);
         };
       };
     };
@@ -1457,22 +1447,16 @@
   var throwError = function(dict) {
     return dict.throwError;
   };
-  var monadThrowEffect = {
-    throwError: throwException,
-    Monad0: function() {
-      return monadEffect;
-    }
-  };
   var catchError = function(dict) {
     return dict.catchError;
   };
   var $$try = function(dictMonadError) {
     var catchError1 = catchError(dictMonadError);
     var Monad0 = dictMonadError.MonadThrow0().Monad0();
-    var map20 = map(Monad0.Bind1().Apply0().Functor0());
+    var map19 = map(Monad0.Bind1().Apply0().Functor0());
     var pure10 = pure(Monad0.Applicative0());
     return function(a2) {
-      return catchError1(map20(Right.create)(a2))(function($52) {
+      return catchError1(map19(Right.create)(a2))(function($52) {
         return pure10(Left.create($52));
       });
     };
@@ -2371,7 +2355,6 @@
   // output/Web.HTML.HTMLDocument/index.js
   var map6 = /* @__PURE__ */ map(functorEffect);
   var toParentNode = unsafeCoerce2;
-  var toNonElementParentNode = unsafeCoerce2;
   var toDocument = unsafeCoerce2;
   var readyState = function(doc) {
     return map6(function() {
@@ -2401,7 +2384,7 @@
   };
 
   // output/Web.HTML.Window/foreign.js
-  function document(window2) {
+  function document2(window2) {
     return function() {
       return window2.document;
     };
@@ -2430,14 +2413,14 @@
       return function($17) {
         return $16(toParentNode($17));
       };
-    }())(document))(windowImpl)))(function(mel) {
+    }())(document2))(windowImpl)))(function(mel) {
       return pure3(bindFlipped1(fromElement)(mel));
     });
   };
   var runHalogenAff = /* @__PURE__ */ runAff_(/* @__PURE__ */ either(throwException)(/* @__PURE__ */ $$const(/* @__PURE__ */ pure1(unit))));
   var awaitLoad = /* @__PURE__ */ makeAff(function(callback) {
     return function __do2() {
-      var rs = bindFlipped4(readyState)(bindFlipped4(document)(windowImpl))();
+      var rs = bindFlipped4(readyState)(bindFlipped4(document2)(windowImpl))();
       if (rs instanceof Loading) {
         var et = map7(toEventTarget)(windowImpl)();
         var listener = eventListener(function(v) {
@@ -2677,17 +2660,17 @@
   var traversableList = {
     traverse: function(dictApplicative) {
       var Apply0 = dictApplicative.Apply0();
-      var map110 = map(Apply0.Functor0());
+      var map19 = map(Apply0.Functor0());
       var lift22 = lift2(Apply0);
-      var pure14 = pure(dictApplicative);
+      var pure13 = pure(dictApplicative);
       return function(f) {
-        var $301 = map110(foldl2(flip(Cons.create))(Nil.value));
+        var $301 = map19(foldl2(flip(Cons.create))(Nil.value));
         var $302 = foldl2(function(acc) {
           var $304 = lift22(flip(Cons.create))(acc);
           return function($305) {
             return $304(f($305));
           };
-        })(pure14(Nil.value));
+        })(pure13(Nil.value));
         return function($303) {
           return $301($302($303));
         };
@@ -4881,18 +4864,18 @@
   };
   var foldFree = function(dictMonadRec) {
     var Monad0 = dictMonadRec.Monad0();
-    var map110 = map(Monad0.Bind1().Apply0().Functor0());
-    var pure14 = pure(Monad0.Applicative0());
+    var map19 = map(Monad0.Bind1().Apply0().Functor0());
+    var pure13 = pure(Monad0.Applicative0());
     var tailRecM4 = tailRecM(dictMonadRec);
     return function(k) {
       var go2 = function(f) {
         var v = toView(f);
         if (v instanceof Return) {
-          return map110(Done.create)(pure14(v.value0));
+          return map19(Done.create)(pure13(v.value0));
         }
         ;
         if (v instanceof Bind) {
-          return map110(function($199) {
+          return map19(function($199) {
             return Loop.create(v.value1($199));
           })(k(v.value0));
         }
@@ -4905,12 +4888,12 @@
 
   // output/Control.Monad.State.Trans/index.js
   var functorStateT = function(dictFunctor) {
-    var map20 = map(dictFunctor);
+    var map19 = map(dictFunctor);
     return {
       map: function(f) {
         return function(v) {
           return function(s) {
-            return map20(function(v1) {
+            return map19(function(v1) {
               return new Tuple(f(v1.value0), v1.value1);
             })(v(s));
           };
@@ -6163,7 +6146,7 @@
   };
   var mkSpec = function(handler2) {
     return function(renderChildRef) {
-      return function(document2) {
+      return function(document3) {
         var getNode = unRenderStateX(function(v) {
           return v.node;
         });
@@ -6226,12 +6209,12 @@
         return {
           buildWidget: buildWidget2,
           buildAttributes,
-          document: document2
+          document: document3
         };
       };
     };
   };
-  var renderSpec = function(document2) {
+  var renderSpec = function(document3) {
     return function(container) {
       var render = function(handler2) {
         return function(child) {
@@ -6240,7 +6223,7 @@
               if (v1 instanceof Nothing) {
                 return function __do2() {
                   var renderChildRef = $$new(child)();
-                  var spec = mkSpec(handler2)(renderChildRef)(document2);
+                  var spec = mkSpec(handler2)(renderChildRef)(document3);
                   var machine = buildVDom(spec)(v);
                   var node = extract2(machine);
                   $$void6(appendChild(node)(toNode(container)))();
@@ -6284,11 +6267,17 @@
   var runUI2 = function(component) {
     return function(i2) {
       return function(element3) {
-        return bind14(liftEffect6(map16(toDocument)(bindFlipped7(document)(windowImpl))))(function(document2) {
-          return runUI(renderSpec(document2)(element3))(component)(i2);
+        return bind14(liftEffect6(map16(toDocument)(bindFlipped7(document2)(windowImpl))))(function(document3) {
+          return runUI(renderSpec(document3)(element3))(component)(i2);
         });
       };
     };
+  };
+
+  // output/ModularBlog.Common.Rendering/foreign.js
+  var removeElementFromBodyById = (id2) => () => {
+    const e = document.getElementById(id2);
+    document.body.removeChild(e);
   };
 
   // output/Control.Monad.State/index.js
@@ -6485,7 +6474,7 @@
         return Code.value;
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 71, column 1 - line 71, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 73, column 1 - line 73, column 32): " + [x.constructor.name]);
     },
     from: function(x) {
       if (x instanceof Quote) {
@@ -6500,7 +6489,7 @@
         return new Inr(new Inr(NoArguments.value));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 71, column 1 - line 71, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 73, column 1 - line 73, column 32): " + [x.constructor.name]);
     }
   };
   var genericShow2 = /* @__PURE__ */ genericShow(genericStyle_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2({
@@ -6531,7 +6520,7 @@
         return Column.value;
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 86, column 1 - line 86, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 88, column 1 - line 88, column 32): " + [x.constructor.name]);
     },
     from: function(x) {
       if (x instanceof Row) {
@@ -6542,7 +6531,7 @@
         return new Inr(NoArguments.value);
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 86, column 1 - line 86, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 88, column 1 - line 88, column 32): " + [x.constructor.name]);
     }
   };
   var genericShow1 = /* @__PURE__ */ genericShow(genericGroup_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2({
@@ -6563,25 +6552,6 @@
     widgetSlotId: 0
   };
 
-  // output/Web.DOM.NonElementParentNode/foreign.js
-  function _getElementById(id2) {
-    return function(node) {
-      return function() {
-        return node.getElementById(id2);
-      };
-    };
-  }
-
-  // output/Web.DOM.NonElementParentNode/index.js
-  var map17 = /* @__PURE__ */ map(functorEffect);
-  var getElementById = function(eid) {
-    var $2 = map17(toMaybe);
-    var $3 = _getElementById(eid);
-    return function($4) {
-      return $2($3($4));
-    };
-  };
-
   // output/ModularBlog.Common.Rendering/index.js
   var bindStateT2 = /* @__PURE__ */ bindStateT(monadIdentity);
   var bind5 = /* @__PURE__ */ bind(bindStateT2);
@@ -6589,20 +6559,19 @@
   var pure9 = /* @__PURE__ */ pure(applicativeStateT2);
   var show2 = /* @__PURE__ */ show(showStyle);
   var show1 = /* @__PURE__ */ show(showGroup);
-  var map18 = /* @__PURE__ */ map(/* @__PURE__ */ functorStateT(functorIdentity));
+  var map17 = /* @__PURE__ */ map(/* @__PURE__ */ functorStateT(functorIdentity));
   var fold2 = /* @__PURE__ */ fold(foldableList)(monoidArray);
   var sequence2 = /* @__PURE__ */ sequence(traversableList)(applicativeStateT2);
-  var map19 = /* @__PURE__ */ map(functorList);
-  var composeKleisli2 = /* @__PURE__ */ composeKleisli(bindEffect);
-  var pure13 = /* @__PURE__ */ pure(applicativeEffect);
-  var throwError3 = /* @__PURE__ */ throwError(monadThrowEffect);
-  var bind15 = /* @__PURE__ */ bind(bindHalogenM);
+  var map18 = /* @__PURE__ */ map(functorList);
+  var discard5 = /* @__PURE__ */ discard(discardUnit);
+  var discard23 = /* @__PURE__ */ discard5(bindHalogenM);
   var liftEffect7 = /* @__PURE__ */ liftEffect(/* @__PURE__ */ monadEffectHalogenM(monadEffectAff));
   var pure23 = /* @__PURE__ */ pure(applicativeHalogenM);
   var put2 = /* @__PURE__ */ put(monadStateHalogenM);
   var renderNoteExtraRenderNote = {
     renderNoteInject: /* @__PURE__ */ unwrap()
   };
+  var runRenderM = /* @__PURE__ */ flip(evalState)(initialRenderNoteEnv);
   var renderStyled = function(style2) {
     return function(m_hs) {
       var use_css_class = bind5(m_hs)(function(hs) {
@@ -6634,7 +6603,7 @@
       }
       ;
       if (v instanceof Grouped) {
-        return renderGrouped(v.value0)(map18(fold2)(sequence2(map19(renderNote(dictRenderNoteExtra))(v.value1))));
+        return renderGrouped(v.value0)(map17(fold2)(sequence2(map18(renderNote(dictRenderNoteExtra))(v.value1))));
       }
       ;
       if (v instanceof Inject) {
@@ -6645,19 +6614,9 @@
     };
   };
   var renderNote1 = /* @__PURE__ */ renderNote(renderNoteExtraRenderNote);
-  var getNodeById = function(id2) {
-    return composeKleisli2(function($64) {
-      return pure13(toNonElementParentNode($64));
-    })(composeKleisli2(getElementById(id2))(composeKleisli2(maybe(throwError3(error("element not found: #" + id2)))(pure13))(function($65) {
-      return pure13(toNode2($65));
-    })));
-  };
-  var getParentNodeOfNodeById = function(id2) {
-    return composeKleisli2(getNodeById(id2))(composeKleisli2(parentNode2)(maybe(throwError3(error("no parent node of: #" + id2)))(pure13)));
-  };
   var component_Page = /* @__PURE__ */ function() {
     var render = function(v) {
-      return div2([])(flip(evalState)(initialRenderNoteEnv)(renderNote1(v.page.note)));
+      return div2([])(runRenderM(renderNote1(v.page.note)));
     };
     var initialState = function(v) {
       return {
@@ -6666,16 +6625,8 @@
     };
     var handleAction = function(v) {
       if (v instanceof Initialize_PageAction) {
-        return bind15(liftEffect7(windowImpl))(function(window2) {
-          return bind15(liftEffect7(document(window2)))(function(document2) {
-            return bind15(liftEffect7(getNodeById("static_content")(document2)))(function(static_content) {
-              return bind15(liftEffect7(getParentNodeOfNodeById("static_content")(document2)))(function(static_content_parent) {
-                return bind15(liftEffect7(removeChild2(static_content_parent)(static_content)))(function() {
-                  return pure23(unit);
-                });
-              });
-            });
-          });
+        return discard23(liftEffect7(removeElementFromBodyById("static_content")))(function() {
+          return pure23(unit);
         });
       }
       ;
@@ -6683,7 +6634,7 @@
         return put2(initialState(v.value0));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Rendering (line 36, column 18 - line 44, column 59): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Rendering (line 37, column 18 - line 41, column 59): " + [v.constructor.name]);
     };
     var $$eval = mkEval({
       handleQuery: defaultEval.handleQuery,

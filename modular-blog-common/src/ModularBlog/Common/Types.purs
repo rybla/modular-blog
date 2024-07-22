@@ -57,6 +57,8 @@ data Note a
 
 derive instance Generic (Note a) _
 
+derive instance Functor Note
+
 instance Mu.Encode PlainNote where
   encode x = Mu.generic_encode x
 

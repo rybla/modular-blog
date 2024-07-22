@@ -1,6 +1,7 @@
 package:
   name: modular-blog
   dependencies:
+    - arrays
     - modular-blog-app
     - modular-blog-common
     - modular-blog-content

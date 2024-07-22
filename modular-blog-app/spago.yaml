@@ -4,5 +4,6 @@ package:
     - console
     - effect
     - prelude
+    - web-url
     - modular-blog-common
     - modular-blog-content
