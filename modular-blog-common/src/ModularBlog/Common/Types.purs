@@ -7,12 +7,11 @@ import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.Newtype (class Newtype)
 import Data.Show.Generic (genericShow)
-import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
 import Halogen as H
 import ModularBlog.Common.MuEditor as MuEditor
 import ModularBlog.Common.Mucode as MuCode
-import Type.Prelude (Proxy(..))
+import Type.Prelude (class IsSymbol, Proxy(..))
 
 -- =============================================================================
 -- Page
@@ -61,6 +60,7 @@ data Note a
   | Named NoteName
   | Styled Style (Note a)
   | Grouped Group (List (Note a))
+  | Image ImageSize ImageStyle String
   | Inject a
 
 derive instance Generic (Note a) _
@@ -136,6 +136,70 @@ instance MuCode.Decode Group where
 instance MuEditor.Editable Group where
   render' x y = MuEditor.generic_render x y
   default x = MuEditor.generic_default x
+
+data ImageSize
+  = FillWidth_ImageSize
+  | Actual_ImageSize
+
+derive instance Generic ImageSize _
+
+instance Show ImageSize where
+  show x = genericShow x
+
+instance MuCode.Encode ImageSize where
+  encode x = MuCode.generic_encode x
+
+instance MuCode.Decode ImageSize where
+  parse x = MuCode.generic_parse x
+
+instance MuEditor.Editable ImageSize where
+  render' x y = MuEditor.generic_render x y
+  default x = MuEditor.generic_default x
+
+data ImageStyle
+  = Normal_ImageStyle
+  | Shadowed_ImageStyle
+
+derive instance Generic ImageStyle _
+
+instance Show ImageStyle where
+  show x = genericShow x
+
+instance MuCode.Encode ImageStyle where
+  encode x = MuCode.generic_encode x
+
+instance MuCode.Decode ImageStyle where
+  parse x = MuCode.generic_parse x
+
+instance MuEditor.Editable ImageStyle where
+  render' x y = MuEditor.generic_render x y
+  default x = MuEditor.generic_default x
+
+-- =============================================================================
+-- Utility types
+-- =============================================================================
+
+data Flag (name :: Symbol) = Flag Boolean
+
+derive instance Generic (Flag name) _
+
+instance Show (Flag name) where
+  show x = genericShow x
+
+instance MuCode.Encode (Flag name) where
+  encode x = MuCode.generic_encode x
+
+instance MuCode.Decode (Flag name) where
+  parse x = MuCode.generic_parse x
+
+-- TODO: need to change how Editable is define to allow for non-select-based edit controls
+-- -- instance IsSymbol name => MuEditor.Editable (Flag name) where
+-- --   render' wrap (Flag b) = ?a
+-- --   default = ?a
+
+-- =============================================================================
+-- Miscellaneous types
+-- =============================================================================
 
 type NoteHTML = H.ComponentHTML PageAction NoteSlots Aff
 

@@ -4373,6 +4373,13 @@
   };
   var empty3 = empty2;
 
+  // output/Data.String.Common/foreign.js
+  var joinWith = function(s) {
+    return function(xs) {
+      return xs.join(s);
+    };
+  };
+
   // output/Data.String.Common/index.js
   var $$null = function(s) {
     return s === "";
@@ -6642,6 +6649,9 @@
   var element2 = /* @__PURE__ */ function() {
     return element(Nothing.value);
   }();
+  var img = function(props) {
+    return element2("img")(props)([]);
+  };
   var option = /* @__PURE__ */ element2("option");
   var select3 = /* @__PURE__ */ element2("select");
   var span3 = /* @__PURE__ */ element2("span");
@@ -6660,10 +6670,19 @@
   var prop1 = /* @__PURE__ */ prop3(isPropBoolean);
   var prop22 = /* @__PURE__ */ prop3(isPropString);
   var selected2 = /* @__PURE__ */ prop1("selected");
+  var src9 = /* @__PURE__ */ prop22("src");
   var value12 = function(dictIsProp) {
     return prop3(dictIsProp)("value");
   };
   var href4 = /* @__PURE__ */ prop22("href");
+  var classes = /* @__PURE__ */ function() {
+    var $32 = prop22("className");
+    var $33 = joinWith(" ");
+    var $34 = map(functorArray)(unwrap2);
+    return function($35) {
+      return $32($33($34($35)));
+    };
+  }();
   var class_ = /* @__PURE__ */ function() {
     var $36 = prop22("className");
     return function($37) {
@@ -9308,6 +9327,26 @@
       return "Code";
     }
   };
+  var Normal_ImageStyleIsSymbol = {
+    reflectSymbol: function() {
+      return "Normal_ImageStyle";
+    }
+  };
+  var Shadowed_ImageStyleIsSymbol = {
+    reflectSymbol: function() {
+      return "Shadowed_ImageStyle";
+    }
+  };
+  var FillWidth_ImageSizeIsSymbol = {
+    reflectSymbol: function() {
+      return "FillWidth_ImageSize";
+    }
+  };
+  var Actual_ImageSizeIsSymbol = {
+    reflectSymbol: function() {
+      return "Actual_ImageSize";
+    }
+  };
   var ColumnIsSymbol = {
     reflectSymbol: function() {
       return "Column";
@@ -9322,9 +9361,9 @@
   var generic_EncodeConstructor2 = /* @__PURE__ */ generic_EncodeConstructor(generic_EncodeArgsNoArgum);
   var generic_EncodeSum2 = /* @__PURE__ */ generic_EncodeSum(generic_EncodeConstructor2);
   var generic_EncodeSum12 = /* @__PURE__ */ generic_EncodeSum2(generic_EncodeConstructor2);
-  var generic_EncodeConstructor12 = /* @__PURE__ */ generic_EncodeConstructor(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeString));
+  var generic_EncodeArgsArgumen2 = /* @__PURE__ */ generic_EncodeArgsArgumen(encodeString);
+  var generic_EncodeConstructor12 = /* @__PURE__ */ generic_EncodeConstructor(generic_EncodeArgsArgumen2);
   var generic_EncodeSum22 = /* @__PURE__ */ generic_EncodeSum(generic_EncodeConstructor12);
-  var generic_EncodeConstructor22 = /* @__PURE__ */ generic_EncodeConstructor(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeVoid));
   var generic_EditableSum2 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(TitleIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(SubtitleIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(SectionIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(SubsectionIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(QuoteIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(BlockIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableConstruct(CodeIsSymbol)(genericArgs_EditableNoArg)))))));
   var genericArgs_EditableArgum2 = /* @__PURE__ */ genericArgs_EditableArgum(editableString);
   var generic_EditableConstruct2 = /* @__PURE__ */ generic_EditableConstruct({
@@ -9332,13 +9371,15 @@
       return "NoteName";
     }
   })(genericArgs_EditableArgum2);
-  var generic_EditableSum1 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(ColumnIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableConstruct(RowIsSymbol)(genericArgs_EditableNoArg));
-  var generic_EditableSum22 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
+  var generic_EditableSum1 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(Normal_ImageStyleIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableConstruct(Shadowed_ImageStyleIsSymbol)(genericArgs_EditableNoArg));
+  var generic_EditableSum22 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(FillWidth_ImageSizeIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableConstruct(Actual_ImageSizeIsSymbol)(genericArgs_EditableNoArg));
+  var generic_EditableSum3 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct(ColumnIsSymbol)(genericArgs_EditableNoArg))(/* @__PURE__ */ generic_EditableConstruct(RowIsSymbol)(genericArgs_EditableNoArg));
+  var generic_EditableSum4 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
     reflectSymbol: function() {
       return "Hole";
     }
   })(genericArgs_EditableNoArg));
-  var generic_EditableSum3 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
+  var generic_EditableSum5 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
     reflectSymbol: function() {
       return "Literal";
     }
@@ -9353,17 +9394,12 @@
       return "Grouped";
     }
   });
-  var generic_EditableConstruct3 = /* @__PURE__ */ generic_EditableConstruct({
-    reflectSymbol: function() {
-      return "Inject";
-    }
-  })(/* @__PURE__ */ genericArgs_EditableArgum(editableVoid));
   var generic_DecodeConstructor2 = /* @__PURE__ */ generic_DecodeConstructor(generic_DecodeArgsNoArgum);
   var generic_DecodeSum2 = /* @__PURE__ */ generic_DecodeSum(generic_DecodeConstructor2);
   var generic_DecodeSum12 = /* @__PURE__ */ generic_DecodeSum2(generic_DecodeConstructor2);
-  var generic_DecodeConstructor12 = /* @__PURE__ */ generic_DecodeConstructor(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeString));
+  var generic_DecodeArgsArgumen2 = /* @__PURE__ */ generic_DecodeArgsArgumen(decodeString);
+  var generic_DecodeConstructor12 = /* @__PURE__ */ generic_DecodeConstructor(generic_DecodeArgsArgumen2);
   var generic_DecodeSum22 = /* @__PURE__ */ generic_DecodeSum(generic_DecodeConstructor12);
-  var generic_DecodeConstructor22 = /* @__PURE__ */ generic_DecodeConstructor(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeVoid));
   var Title = /* @__PURE__ */ function() {
     function Title2() {
     }
@@ -9412,6 +9448,34 @@
     ;
     Code2.value = new Code2();
     return Code2;
+  }();
+  var Normal_ImageStyle = /* @__PURE__ */ function() {
+    function Normal_ImageStyle2() {
+    }
+    ;
+    Normal_ImageStyle2.value = new Normal_ImageStyle2();
+    return Normal_ImageStyle2;
+  }();
+  var Shadowed_ImageStyle = /* @__PURE__ */ function() {
+    function Shadowed_ImageStyle2() {
+    }
+    ;
+    Shadowed_ImageStyle2.value = new Shadowed_ImageStyle2();
+    return Shadowed_ImageStyle2;
+  }();
+  var FillWidth_ImageSize = /* @__PURE__ */ function() {
+    function FillWidth_ImageSize2() {
+    }
+    ;
+    FillWidth_ImageSize2.value = new FillWidth_ImageSize2();
+    return FillWidth_ImageSize2;
+  }();
+  var Actual_ImageSize = /* @__PURE__ */ function() {
+    function Actual_ImageSize2() {
+    }
+    ;
+    Actual_ImageSize2.value = new Actual_ImageSize2();
+    return Actual_ImageSize2;
   }();
   var Column = /* @__PURE__ */ function() {
     function Column2() {
@@ -9479,6 +9543,22 @@
       };
     };
     return Grouped2;
+  }();
+  var Image2 = /* @__PURE__ */ function() {
+    function Image3(value0, value1, value22) {
+      this.value0 = value0;
+      this.value1 = value1;
+      this.value2 = value22;
+    }
+    ;
+    Image3.create = function(value0) {
+      return function(value1) {
+        return function(value22) {
+          return new Image3(value0, value1, value22);
+        };
+      };
+    };
+    return Image3;
   }();
   var Inject = /* @__PURE__ */ function() {
     function Inject2(value0) {
@@ -9603,8 +9683,12 @@
         return new Grouped(x.value0.value0.value0.value0.value0.value0, x.value0.value0.value0.value0.value0.value1);
       }
       ;
-      if (x instanceof Inr && (x.value0 instanceof Inr && (x.value0.value0 instanceof Inr && (x.value0.value0.value0 instanceof Inr && x.value0.value0.value0.value0 instanceof Inr)))) {
-        return new Inject(x.value0.value0.value0.value0.value0);
+      if (x instanceof Inr && (x.value0 instanceof Inr && (x.value0.value0 instanceof Inr && (x.value0.value0.value0 instanceof Inr && (x.value0.value0.value0.value0 instanceof Inr && x.value0.value0.value0.value0.value0 instanceof Inl))))) {
+        return new Image2(x.value0.value0.value0.value0.value0.value0.value0, x.value0.value0.value0.value0.value0.value0.value1.value0, x.value0.value0.value0.value0.value0.value0.value1.value1);
+      }
+      ;
+      if (x instanceof Inr && (x.value0 instanceof Inr && (x.value0.value0 instanceof Inr && (x.value0.value0.value0 instanceof Inr && (x.value0.value0.value0.value0 instanceof Inr && x.value0.value0.value0.value0.value0 instanceof Inr))))) {
+        return new Inject(x.value0.value0.value0.value0.value0.value0);
       }
       ;
       throw new Error("Failed pattern match at ModularBlog.Common.Types (line 66, column 1 - line 66, column 35): " + [x.constructor.name]);
@@ -9630,8 +9714,12 @@
         return new Inr(new Inr(new Inr(new Inr(new Inl(new Product(x.value0, x.value1))))));
       }
       ;
+      if (x instanceof Image2) {
+        return new Inr(new Inr(new Inr(new Inr(new Inr(new Inl(new Product(x.value0, new Product(x.value1, x.value2))))))));
+      }
+      ;
       if (x instanceof Inject) {
-        return new Inr(new Inr(new Inr(new Inr(new Inr(x.value0)))));
+        return new Inr(new Inr(new Inr(new Inr(new Inr(new Inr(x.value0))))));
       }
       ;
       throw new Error("Failed pattern match at ModularBlog.Common.Types (line 66, column 1 - line 66, column 35): " + [x.constructor.name]);
@@ -9653,6 +9741,74 @@
   var generic_render22 = /* @__PURE__ */ generic_render(genericNoteName_)(generic_EditableConstruct2);
   var generic_default22 = /* @__PURE__ */ generic_default(genericNoteName_)(generic_EditableConstruct2);
   var generic_parse22 = /* @__PURE__ */ generic_parse(genericNoteName_)(generic_DecodeConstructor12);
+  var genericImageStyle_ = {
+    to: function(x) {
+      if (x instanceof Inl) {
+        return Normal_ImageStyle.value;
+      }
+      ;
+      if (x instanceof Inr) {
+        return Shadowed_ImageStyle.value;
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 163, column 1 - line 163, column 37): " + [x.constructor.name]);
+    },
+    from: function(x) {
+      if (x instanceof Normal_ImageStyle) {
+        return new Inl(NoArguments.value);
+      }
+      ;
+      if (x instanceof Shadowed_ImageStyle) {
+        return new Inr(NoArguments.value);
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 163, column 1 - line 163, column 37): " + [x.constructor.name]);
+    }
+  };
+  var genericShow1 = /* @__PURE__ */ genericShow(genericImageStyle_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2(Normal_ImageStyleIsSymbol))(/* @__PURE__ */ genericShowConstructor2(Shadowed_ImageStyleIsSymbol)));
+  var generic_encode3 = /* @__PURE__ */ generic_encode(genericImageStyle_)(generic_EncodeSum12);
+  var generic_render3 = /* @__PURE__ */ generic_render(genericImageStyle_)(generic_EditableSum1);
+  var generic_default3 = /* @__PURE__ */ generic_default(genericImageStyle_)(generic_EditableSum1);
+  var generic_parse3 = /* @__PURE__ */ generic_parse(genericImageStyle_)(generic_DecodeSum12);
+  var showImageStyle = {
+    show: function(x) {
+      return genericShow1(x);
+    }
+  };
+  var genericImageSize_ = {
+    to: function(x) {
+      if (x instanceof Inl) {
+        return FillWidth_ImageSize.value;
+      }
+      ;
+      if (x instanceof Inr) {
+        return Actual_ImageSize.value;
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 144, column 1 - line 144, column 36): " + [x.constructor.name]);
+    },
+    from: function(x) {
+      if (x instanceof FillWidth_ImageSize) {
+        return new Inl(NoArguments.value);
+      }
+      ;
+      if (x instanceof Actual_ImageSize) {
+        return new Inr(NoArguments.value);
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 144, column 1 - line 144, column 36): " + [x.constructor.name]);
+    }
+  };
+  var genericShow22 = /* @__PURE__ */ genericShow(genericImageSize_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2(FillWidth_ImageSizeIsSymbol))(/* @__PURE__ */ genericShowConstructor2(Actual_ImageSizeIsSymbol)));
+  var generic_encode4 = /* @__PURE__ */ generic_encode(genericImageSize_)(generic_EncodeSum12);
+  var generic_render4 = /* @__PURE__ */ generic_render(genericImageSize_)(generic_EditableSum22);
+  var generic_default4 = /* @__PURE__ */ generic_default(genericImageSize_)(generic_EditableSum22);
+  var generic_parse4 = /* @__PURE__ */ generic_parse(genericImageSize_)(generic_DecodeSum12);
+  var showImageSize = {
+    show: function(x) {
+      return genericShow22(x);
+    }
+  };
   var genericGroup_ = {
     to: function(x) {
       if (x instanceof Inl) {
@@ -9677,14 +9833,14 @@
       throw new Error("Failed pattern match at ModularBlog.Common.Types (line 125, column 1 - line 125, column 32): " + [x.constructor.name]);
     }
   };
-  var genericShow1 = /* @__PURE__ */ genericShow(genericGroup_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2(ColumnIsSymbol))(/* @__PURE__ */ genericShowConstructor2(RowIsSymbol)));
-  var generic_encode3 = /* @__PURE__ */ generic_encode(genericGroup_)(generic_EncodeSum12);
-  var generic_render3 = /* @__PURE__ */ generic_render(genericGroup_)(generic_EditableSum1);
-  var generic_default3 = /* @__PURE__ */ generic_default(genericGroup_)(generic_EditableSum1);
-  var generic_parse3 = /* @__PURE__ */ generic_parse(genericGroup_)(generic_DecodeSum12);
+  var genericShow32 = /* @__PURE__ */ genericShow(genericGroup_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2(ColumnIsSymbol))(/* @__PURE__ */ genericShowConstructor2(RowIsSymbol)));
+  var generic_encode5 = /* @__PURE__ */ generic_encode(genericGroup_)(generic_EncodeSum12);
+  var generic_render5 = /* @__PURE__ */ generic_render(genericGroup_)(generic_EditableSum3);
+  var generic_default5 = /* @__PURE__ */ generic_default(genericGroup_)(generic_EditableSum3);
+  var generic_parse5 = /* @__PURE__ */ generic_parse(genericGroup_)(generic_DecodeSum12);
   var showGroup = {
     show: function(x) {
-      return genericShow1(x);
+      return genericShow32(x);
     }
   };
   var functorNote = {
@@ -9710,6 +9866,10 @@
           return new Grouped(m.value0, map27(map(functorNote)(f))(m.value1));
         }
         ;
+        if (m instanceof Image2) {
+          return new Image2(m.value0, m.value1, m.value2);
+        }
+        ;
         if (m instanceof Inject) {
           return new Inject(f(m.value0));
         }
@@ -9730,15 +9890,26 @@
     }
   };
   var generic_EncodeSum3 = /* @__PURE__ */ generic_EncodeSum(/* @__PURE__ */ generic_EncodeConstructor(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeNoteName)));
-  var encodeGroup = {
+  var encodeImageStyle = {
     encode: function(x) {
       return generic_encode3(x);
+    }
+  };
+  var encodeImageSize = {
+    encode: function(x) {
+      return generic_encode4(x);
+    }
+  };
+  var generic_EncodeSum4 = /* @__PURE__ */ generic_EncodeSum(/* @__PURE__ */ generic_EncodeConstructor(/* @__PURE__ */ generic_EncodeArgsProduct(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeImageSize))(/* @__PURE__ */ generic_EncodeArgsProduct(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeImageStyle))(generic_EncodeArgsArgumen2))))(/* @__PURE__ */ generic_EncodeConstructor(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeVoid)));
+  var encodeGroup = {
+    encode: function(x) {
+      return generic_encode5(x);
     }
   };
   var generic_EncodeArgsProduct1 = /* @__PURE__ */ generic_EncodeArgsProduct(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeGroup));
   var encodePlainNote = {
     encode: function(x) {
-      return generic_encode1(generic_EncodeSum2(generic_EncodeSum22(generic_EncodeSum3(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct2(generic_EncodeArgsArgumen(encodePlainNote))))(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct1(generic_EncodeArgsArgumen(encodeList(encodePlainNote)))))(generic_EncodeConstructor22))))))(x);
+      return generic_encode1(generic_EncodeSum2(generic_EncodeSum22(generic_EncodeSum3(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct2(generic_EncodeArgsArgumen(encodePlainNote))))(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct1(generic_EncodeArgsArgumen(encodeList(encodePlainNote)))))(generic_EncodeSum4))))))(x);
     }
   };
   var editableStyle = {
@@ -9762,12 +9933,12 @@
       return generic_default22(x);
     }
   };
-  var generic_EditableSum4 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
+  var generic_EditableSum6 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
     reflectSymbol: function() {
       return "Named";
     }
   })(/* @__PURE__ */ genericArgs_EditableArgum(editableNoteName)));
-  var editableGroup = {
+  var editableImageStyle = {
     "render'": function(x) {
       return function(y) {
         return generic_render3(x)(y);
@@ -9777,15 +9948,44 @@
       return generic_default3(x);
     }
   };
+  var editableImageSize = {
+    "render'": function(x) {
+      return function(y) {
+        return generic_render4(x)(y);
+      };
+    },
+    "default": function(x) {
+      return generic_default4(x);
+    }
+  };
+  var generic_EditableSum7 = /* @__PURE__ */ generic_EditableSum(/* @__PURE__ */ generic_EditableConstruct({
+    reflectSymbol: function() {
+      return "Image";
+    }
+  })(/* @__PURE__ */ genericArgs_EditableProdu(/* @__PURE__ */ genericArgs_EditableArgum(editableImageSize))(/* @__PURE__ */ genericArgs_EditableProdu(/* @__PURE__ */ genericArgs_EditableArgum(editableImageStyle))(genericArgs_EditableArgum2))))(/* @__PURE__ */ generic_EditableConstruct({
+    reflectSymbol: function() {
+      return "Inject";
+    }
+  })(/* @__PURE__ */ genericArgs_EditableArgum(editableVoid)));
+  var editableGroup = {
+    "render'": function(x) {
+      return function(y) {
+        return generic_render5(x)(y);
+      };
+    },
+    "default": function(x) {
+      return generic_default5(x);
+    }
+  };
   var genericArgs_EditableProdu1 = /* @__PURE__ */ genericArgs_EditableProdu(/* @__PURE__ */ genericArgs_EditableArgum(editableGroup));
   var editablePlainNote = {
     "render'": function(x) {
       return function(y) {
-        return generic_render1(generic_EditableSum22(generic_EditableSum3(generic_EditableSum4(generic_EditableSum(generic_EditableConstruct1(genericArgs_EditableProdu2(genericArgs_EditableArgum(editablePlainNote))))(generic_EditableSum(generic_EditableConstruct22(genericArgs_EditableProdu1(genericArgs_EditableArgum(editableList(editablePlainNote)))))(generic_EditableConstruct3))))))(x)(y);
+        return generic_render1(generic_EditableSum4(generic_EditableSum5(generic_EditableSum6(generic_EditableSum(generic_EditableConstruct1(genericArgs_EditableProdu2(genericArgs_EditableArgum(editablePlainNote))))(generic_EditableSum(generic_EditableConstruct22(genericArgs_EditableProdu1(genericArgs_EditableArgum(editableList(editablePlainNote)))))(generic_EditableSum7))))))(x)(y);
       };
     },
     "default": function(x) {
-      return generic_default1(generic_EditableSum22(generic_EditableSum3(generic_EditableSum4(generic_EditableSum(generic_EditableConstruct1(genericArgs_EditableProdu2(genericArgs_EditableArgum(editablePlainNote))))(generic_EditableSum(generic_EditableConstruct22(genericArgs_EditableProdu1(genericArgs_EditableArgum(editableList(editablePlainNote)))))(generic_EditableConstruct3))))))(x);
+      return generic_default1(generic_EditableSum4(generic_EditableSum5(generic_EditableSum6(generic_EditableSum(generic_EditableConstruct1(genericArgs_EditableProdu2(genericArgs_EditableArgum(editablePlainNote))))(generic_EditableSum(generic_EditableConstruct22(genericArgs_EditableProdu1(genericArgs_EditableArgum(editableList(editablePlainNote)))))(generic_EditableSum7))))))(x);
     }
   };
   var decodeStyle = {
@@ -9800,15 +10000,26 @@
     }
   };
   var generic_DecodeSum3 = /* @__PURE__ */ generic_DecodeSum(/* @__PURE__ */ generic_DecodeConstructor(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeNoteName)));
-  var decodeGroup = {
+  var decodeImageStyle = {
     parse: function(x) {
       return generic_parse3(x);
+    }
+  };
+  var decodeImageSize = {
+    parse: function(x) {
+      return generic_parse4(x);
+    }
+  };
+  var generic_DecodeSum4 = /* @__PURE__ */ generic_DecodeSum(/* @__PURE__ */ generic_DecodeConstructor(/* @__PURE__ */ generic_DecodeArgsProduct(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeImageSize))(/* @__PURE__ */ generic_DecodeArgsProduct(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeImageStyle))(generic_DecodeArgsArgumen2))))(/* @__PURE__ */ generic_DecodeConstructor(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeVoid)));
+  var decodeGroup = {
+    parse: function(x) {
+      return generic_parse5(x);
     }
   };
   var generic_DecodeArgsProduct1 = /* @__PURE__ */ generic_DecodeArgsProduct(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeGroup));
   var decodePlainNote = {
     parse: function(x) {
-      return generic_parse1(generic_DecodeSum2(generic_DecodeSum22(generic_DecodeSum3(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct2(generic_DecodeArgsArgumen(decodePlainNote))))(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct1(generic_DecodeArgsArgumen(decodeList(decodePlainNote)))))(generic_DecodeConstructor22))))))(x);
+      return generic_parse1(generic_DecodeSum2(generic_DecodeSum22(generic_DecodeSum3(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct2(generic_DecodeArgsArgumen(decodePlainNote))))(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct1(generic_DecodeArgsArgumen(decodeList(decodePlainNote)))))(generic_DecodeSum4))))))(x);
     }
   };
   var initialRenderNoteEnv = {
@@ -9859,6 +10070,8 @@
   var fold4 = /* @__PURE__ */ fold(foldableList)(monoidArray);
   var sequence2 = /* @__PURE__ */ sequence(traversableList)(applicativeStateT2);
   var map110 = /* @__PURE__ */ map(functorList);
+  var show22 = /* @__PURE__ */ show(showImageSize);
+  var show32 = /* @__PURE__ */ show(showImageStyle);
   var discard8 = /* @__PURE__ */ discard(discardUnit);
   var discard23 = /* @__PURE__ */ discard8(bindHalogenM);
   var liftEffect7 = /* @__PURE__ */ liftEffect(/* @__PURE__ */ monadEffectHalogenM(monadEffectAff));
@@ -9923,11 +10136,15 @@
         return renderGrouped(v.value0)(map28(fold4)(sequence2(map110(renderNote(dictRenderNoteExtra))(v.value1))));
       }
       ;
+      if (v instanceof Image2) {
+        return pure13([img([classes(["Image", show22(v.value0), show32(v.value1)]), src9(v.value2)])]);
+      }
+      ;
       if (v instanceof Inject) {
         return renderNoteInject1(v.value0);
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Content.Rendering (line 80, column 14 - line 89, column 33): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Content.Rendering (line 80, column 14 - line 90, column 33): " + [v.constructor.name]);
     };
   };
   var renderNote1 = /* @__PURE__ */ renderNote(renderNoteExtraRenderNote);
@@ -9957,8 +10174,8 @@
       handleQuery: defaultEval.handleQuery,
       finalize: defaultEval.finalize,
       initialize: new Just(Initialize_PageAction.value),
-      receive: function($72) {
-        return Just.create(Receive_PageAction.create($72));
+      receive: function($77) {
+        return Just.create(Receive_PageAction.create($77));
       },
       handleAction
     });

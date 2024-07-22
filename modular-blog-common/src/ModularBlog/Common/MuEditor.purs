@@ -9,7 +9,6 @@ import Data.Lazy (Lazy)
 import Data.Lazy as Lazy
 import Data.List (List(..))
 import Data.Maybe (Maybe(..), isJust, maybe')
-import Data.Tuple (Tuple(..), snd)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect.Aff (Aff)
 import Effect.Unsafe as Effect.Unsafe

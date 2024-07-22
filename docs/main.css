@@ -98,3 +98,19 @@ body {
 .Subsection {
   font-size: 1.5em;
 }
+
+.Image {}
+
+.Image.FillWidth_ImageSize {
+  width: 100%;
+}
+
+.Image.Actual_ImageSize {}
+
+.Image.Normal_ImageStyle {}
+
+.Image.Shadowed_ImageStyle {
+  margin: 0.5em;
+  width: calc(100% - 1em);
+  box-shadow: 0 0 1em 0.1em black;
+}

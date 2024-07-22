@@ -86,6 +86,7 @@ renderNote = case _ of
     Just note -> renderNote note
   Styled style note -> renderStyled style (note # renderNote)
   Grouped group notes -> renderGrouped group (notes # map renderNote # sequence # map fold)
+  Image size style src -> pure [ HH.img [ HP.classes [ H.ClassName "Image", H.ClassName (show size), H.ClassName (show style) ], HP.src src ] ]
   Inject a -> renderNoteInject a
 
 renderStyled :: Style -> RenderM (Array NoteHTML) -> RenderM (Array NoteHTML)
