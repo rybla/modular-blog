@@ -78,8 +78,10 @@ freshWidgetSlotId = do
 
 renderNote :: forall extra. RenderNoteExtra extra => Note extra -> RenderM (Array NoteHTML)
 renderNote = case _ of
+  Hole -> pure [ HH.span [ HP.class_ (H.ClassName "Hole") ] [] ]
   Literal str -> pure [ HH.span [ HP.class_ (H.ClassName "Literal") ] [ HH.text str ] ]
   Named name -> case name `Map.lookup` notes of
+    Nothing | name == "" -> pure []
     Nothing -> pure [ HH.span [ HP.style "background-color: lightpink" ] [ HH.text ("unrecognized note name: " <> name) ] ]
     Just note -> renderNote note
   Styled style note -> renderStyled style (note # renderNote)

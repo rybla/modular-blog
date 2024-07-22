@@ -7,6 +7,7 @@
     "build.Index": "bun spago bundle -p modular-blog-app --module ModularBlog.App.Index --outfile ../docs/main.js --bundle-type app",
     "build": "bun run build.spago && bun run build.GeneratePages",
     "serve": "http-server ./docs",
+    "launch.Index": "bun run build.Index && bun run serve",
     "launch": "bun run build && bun run serve"
   },
   "devDependencies": {

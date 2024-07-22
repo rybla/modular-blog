@@ -19,6 +19,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 import JSURI as JSURI
+import ModularBlog.Common.MuEditor as MuEditor
 import ModularBlog.Common.Mucode as Mucode
 import ModularBlog.Common.Types (Note(..), PlainNote)
 import ModularBlog.Common.Utility (fromJustE)
@@ -49,6 +50,7 @@ _mb_err_note = Proxy :: Proxy "mb_err_note"
 data Action
   = Initialize
   | Modify_ShowEditor (Maybe Boolean -> Maybe Boolean)
+  | Modify_Note (Maybe (String \/ PlainNote) -> Maybe (String \/ PlainNote))
 
 component :: H.Component Query Input Output Aff
 component = mkComponent { initialState, eval, render }
@@ -57,8 +59,8 @@ component = mkComponent { initialState, eval, render }
   initialState _ =
     { mb_show_editor: Just false
     -- , mb_err_note: Nothing
-    -- , mb_err_note: Just (Right (Literal "hello world!"))
-    , mb_err_note: Just (Right (Named "loremIpsum"))
+    , mb_err_note: Just (Right (Literal "hello world!"))
+    -- , mb_err_note: Just (Right (Named "loremIpsum"))
     }
 
   eval = mkEval defaultEval { initialize = Just Initialize, handleAction = handleAction }
@@ -86,7 +88,9 @@ component = mkComponent { initialState, eval, render }
         Just "draft" -> H.modify_ _ { mb_show_editor = Just false }
         _ -> pure unit
     Modify_ShowEditor f -> H.modify_ (prop _mb_show_editor f)
+    Modify_Note f -> H.modify_ (prop _mb_err_note f)
 
+  render :: State -> _
   render { mb_show_editor, mb_err_note } =
     HH.div
       [ HP.style "height: 100vh; display: flex; flex-direction: column" ]
@@ -102,7 +106,6 @@ component = mkComponent { initialState, eval, render }
                       HH.a [ HP.href ("/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component")) ] [ HH.text note_enc ]
               ]
           ]
-
         , case mb_show_editor of
             Nothing -> []
             Just show_editor ->
@@ -110,8 +113,13 @@ component = mkComponent { initialState, eval, render }
                   [ HH.button [ HE.onClick (const (Modify_ShowEditor (map not))) ] [ HH.text (if show_editor then "hide editor" else "show editor") ]
                   ]
               , HH.div [ HP.style (if show_editor then "" else "display: none; ") ]
-                  [ HH.text "editor"
-                  ]
+                  case mb_err_note of
+                    Nothing -> []
+                    Just (Left _err) -> []
+                    Just (Right note) ->
+                      [ HH.slot (Proxy :: Proxy "editor") unit MuEditor.component { val: note } case _ of
+                          MuEditor.Updated note' -> Modify_Note (const (Just (Right note')))
+                      ]
               ]
 
         , case mb_err_note of

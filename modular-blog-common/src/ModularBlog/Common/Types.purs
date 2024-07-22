@@ -2,14 +2,15 @@ module ModularBlog.Common.Types where
 
 import Prelude
 
-import Halogen as H
 import Control.Monad.State (State)
 import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.Newtype (class Newtype)
 import Data.Show.Generic (genericShow)
 import Effect.Aff (Aff)
-import ModularBlog.Common.Mucode as Mu
+import Halogen as H
+import ModularBlog.Common.MuEditor as MuEditor
+import ModularBlog.Common.Mucode as MuCode
 import Type.Prelude (Proxy(..))
 
 -- =============================================================================
@@ -42,6 +43,10 @@ data PageAction
 -- | `PlainNote` supports `Decode` and `Encode`.
 type PlainNote = Note Void
 
+instance MuEditor.Editable PlainNote where
+  render' x y = MuEditor.generic_render x y
+  default x = MuEditor.generic_default x
+
 -- | `PlainNote` DOESN'T support `Decode` and `Encode`.
 type HyperNote = Note RenderNoteHTML
 
@@ -50,7 +55,8 @@ newtype RenderNoteHTML = RenderNoteHTML (RenderM (Array NoteHTML))
 derive instance Newtype RenderNoteHTML _
 
 data Note a
-  = Literal String
+  = Hole
+  | Literal String
   | Named String
   | Styled Style (Note a)
   | Grouped Group (List (Note a))
@@ -60,11 +66,11 @@ derive instance Generic (Note a) _
 
 derive instance Functor Note
 
-instance Mu.Encode PlainNote where
-  encode x = Mu.generic_encode x
+instance MuCode.Encode PlainNote where
+  encode x = MuCode.generic_encode x
 
-instance Mu.Decode PlainNote where
-  parse x = Mu.generic_parse x
+instance MuCode.Decode PlainNote where
+  parse x = MuCode.generic_parse x
 
 data Style
   = Quote
@@ -76,11 +82,15 @@ derive instance Generic Style _
 instance Show Style where
   show x = genericShow x
 
-instance Mu.Encode Style where
-  encode x = Mu.generic_encode x
+instance MuCode.Encode Style where
+  encode x = MuCode.generic_encode x
 
-instance Mu.Decode Style where
-  parse x = Mu.generic_parse x
+instance MuCode.Decode Style where
+  parse x = MuCode.generic_parse x
+
+instance MuEditor.Editable Style where
+  render' x y = MuEditor.generic_render x y
+  default x = MuEditor.generic_default x
 
 data Group
   = Row
@@ -91,11 +101,15 @@ derive instance Generic Group _
 instance Show Group where
   show x = genericShow x
 
-instance Mu.Encode Group where
-  encode x = Mu.generic_encode x
+instance MuCode.Encode Group where
+  encode x = MuCode.generic_encode x
 
-instance Mu.Decode Group where
-  parse x = Mu.generic_parse x
+instance MuCode.Decode Group where
+  parse x = MuCode.generic_parse x
+
+instance MuEditor.Editable Group where
+  render' x y = MuEditor.generic_render x y
+  default x = MuEditor.generic_default x
 
 type NoteHTML = H.ComponentHTML PageAction NoteSlots Aff
 
