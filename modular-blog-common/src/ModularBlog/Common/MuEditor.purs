@@ -9,8 +9,8 @@ import Data.Lazy (Lazy)
 import Data.Lazy as Lazy
 import Data.List (List(..))
 import Data.Maybe (Maybe(..), isJust, maybe')
+import Data.Tuple (Tuple(..), snd)
 import Data.Tuple.Nested (type (/\), (/\))
-import Debug as Debug
 import Effect.Aff (Aff)
 import Effect.Unsafe as Effect.Unsafe
 import Halogen (HalogenM)
@@ -36,7 +36,7 @@ data Output e = Updated e
 
 type State e = { val :: e }
 
-data Action e = Put_Action e
+data Action e = Put_Action e | Receive_Action (Input e)
 
 type Slots :: Row Type
 type Slots = ()
@@ -50,7 +50,7 @@ component = H.mkComponent { initialState, eval, render: renderComponent }
   where
   initialState { val } = { val }
 
-  eval = H.mkEval H.defaultEval { handleQuery = handleQuery, handleAction = handleAction }
+  eval = H.mkEval H.defaultEval { receive = Just <<< Receive_Action, handleQuery = handleQuery, handleAction = handleAction }
 
   handleQuery :: forall a. Query e a -> HalogenM (State e) (Action e) Slots (Output e) Aff (Maybe a)
   handleQuery = case _ of
@@ -63,6 +63,7 @@ component = H.mkComponent { initialState, eval, render: renderComponent }
     Put_Action val -> do
       H.modify_ _ { val = val }
       H.raise (Updated val)
+    Receive_Action input -> H.put (initialState input)
 
   renderComponent { val } = render identity val
 
@@ -71,43 +72,47 @@ component = H.mkComponent { initialState, eval, render: renderComponent }
 -- =============================================================================
 
 class Editable a where
-  render' :: forall b. (a -> b) -> a -> Array (String /\ Boolean /\ Lazy b) /\ EditableHTML b
+  render' :: forall b. (a -> b) -> a -> Array (String /\ Boolean /\ Lazy b) /\ Array (EditableHTML b)
   default :: Proxy a -> a
 
 render :: forall a b. Editable a => (a -> b) -> a -> EditableHTML b
 render wrap a =
   let
-    options /\ h = render' wrap a
+    options /\ hs = render' wrap a
   in
-    if Array.length options == 1 then
-      h
-    else
-      HH.div
-        [ HP.style "display: flex; flex-direction: column; gap: 0.5em" ]
-        [ HH.select
-            [ HE.onValueChange \name ->
-                options
-                  # Array.find (\(name' /\ _) -> name == name')
-                  # maybe' (\_ -> unsafeCrashWith ("unrecognized constructor name: " <> show name)) identity
-                  # (\(_ /\ _ /\ lazy_b) -> Put_Action (lazy_b # Lazy.force))
-            , HE.onChange \event ->
-                let
-                  name = event
-                    # Web.Event.target
-                    # maybe' (\_ -> unsafeCrashWith "even did not have an event target") identity
-                    # Web.HTML.HTMLSelectElement.fromEventTarget
-                    # maybe' (\_ -> unsafeCrashWith "event target couldn't be converted into a HTMLSelectElement") identity
-                    # Web.HTML.HTMLSelectElement.value
-                    # Effect.Unsafe.unsafePerformEffect
-                in
-                  options
-                    # Array.find (\(name' /\ _) -> name == name')
-                    # maybe' (\_ -> unsafeCrashWith ("unrecognized constructor name: " <> show name)) identity
-                    # (\(_ /\ _ /\ lazy_b) -> Put_Action (lazy_b # Lazy.force))
+    HH.div
+      [ HP.class_ (H.ClassName "Editable-Constructor") ]
+      ( [ if Array.length options == 1 then []
+          else
+            [ HH.select
+                [ HE.onValueChange \name ->
+                    options
+                      # Array.find (\(name' /\ _) -> name == name')
+                      # maybe' (\_ -> unsafeCrashWith ("unrecognized constructor name: " <> show name)) identity
+                      # (\(_ /\ _ /\ lazy_b) -> Put_Action (lazy_b # Lazy.force))
+                , HE.onChange \event ->
+                    let
+                      name = event
+                        # Web.Event.target
+                        # maybe' (\_ -> unsafeCrashWith "even did not have an event target") identity
+                        # Web.HTML.HTMLSelectElement.fromEventTarget
+                        # maybe' (\_ -> unsafeCrashWith "event target couldn't be converted into a HTMLSelectElement") identity
+                        # Web.HTML.HTMLSelectElement.value
+                        # Effect.Unsafe.unsafePerformEffect
+                    in
+                      options
+                        # Array.find (\(name' /\ _) -> name == name')
+                        # maybe' (\_ -> unsafeCrashWith ("unrecognized constructor name: " <> show name)) identity
+                        # (\(_ /\ _ /\ lazy_b) -> Put_Action (lazy_b # Lazy.force))
+                ]
+                (options # map (\(name /\ selected /\ _) -> HH.option [ HP.value name, HP.selected selected ] [ HH.text name ]))
             ]
-            (options # map (\(name /\ selected /\ _) -> HH.option [ HP.value name, HP.selected selected ] [ HH.text name ]))
-        , h
-        ]
+        , if Array.length hs == 0 then []
+          else if Array.length options == 1 then hs
+          else
+            [ HH.div [ HP.class_ (H.ClassName "Editable-Args") ] hs ]
+        ] # Array.fold
+      )
 
 -- =============================================================================
 -- standard instances
@@ -118,45 +123,42 @@ instance Editable Void where
   default _ = unsafeCrashWith "cannot create a default term of type Void"
 
 instance Editable Unit where
-  render' wrap it =
-    [ "Unit" /\ true /\ (Lazy.defer \_ -> wrap it) ] /\
-      HH.div [] [ HH.text "•" ]
+  render' wrap it = [ "Unit" /\ true /\ (Lazy.defer \_ -> wrap it) ] /\ []
   default _ = unit
 
 instance Editable Int where
   render' wrap i =
     [ "Int" /\ true /\ (Lazy.defer \_ -> wrap i) ] /\
-      HH.div [] [ HH.text (show i) ]
+      [ HH.div [ HP.class_ (H.ClassName "Editable-Int") ] [ HH.text (show i) ] ]
   default _ = 0
 
 instance Editable Boolean where
   render' wrap b =
     [ "Boolean" /\ true /\ (Lazy.defer \_ -> wrap b) ] /\
-      HH.div [] [ HH.text (show b) ]
+      [ HH.div [ HP.class_ (H.ClassName "Editable-Boolean") ] [ HH.text (show b) ] ]
   default _ = false
 
 instance Editable String where
   render' wrap s =
     [ "String" /\ true /\ (Lazy.defer \_ -> wrap s) ] /\
-      HH.div []
-        [ HH.textarea
-            [ HE.onChange
-                ( \event ->
-                    Debug.trace "textarea onChange" \_ ->
-                      let
-                        s' = event
-                          # Web.Event.target
-                          # maybe' (\_ -> unsafeCrashWith "even did not have an event target") identity
-                          # Web.HTML.HTMLTextAreaElement.fromEventTarget
-                          # maybe' (\_ -> unsafeCrashWith "event target couldn't be converted into a HTMLSelectElement") identity
-                          # Web.HTML.HTMLTextAreaElement.value
-                          # Effect.Unsafe.unsafePerformEffect
-                      in
-                        Put_Action (wrap s')
-                )
-            , HP.value s
-            ]
-        ]
+      [ HH.textarea
+          [ HP.class_ (H.ClassName "Editable-String")
+          , HE.onChange
+              ( \event ->
+                  let
+                    s' = event
+                      # Web.Event.target
+                      # maybe' (\_ -> unsafeCrashWith "even did not have an event target") identity
+                      # Web.HTML.HTMLTextAreaElement.fromEventTarget
+                      # maybe' (\_ -> unsafeCrashWith "event target couldn't be converted into a HTMLSelectElement") identity
+                      # Web.HTML.HTMLTextAreaElement.value
+                      # Effect.Unsafe.unsafePerformEffect
+                  in
+                    Put_Action (wrap s')
+              )
+          , HP.value s
+          ]
+      ]
   default _ = ""
 
 instance Editable a => Editable (List a) where
@@ -165,31 +167,34 @@ instance Editable a => Editable (List a) where
       html = case l of
         Nil ->
           HH.div
-            [ HP.style "padding: 0.5em" ]
+            []
             [ HH.button
-                [ HP.style "padding: 0.5em"
+                [ HP.style ""
                 , HE.onClick (\_ -> Put_Action (wrap (Cons (default (Proxy :: Proxy a)) l)))
                 ]
-                [ HH.text "+" ]
+                [ HH.text "➕" ]
             ]
         Cons h t ->
           HH.div
-            []
-            [ HH.button
-                [ HP.style "padding: 0.5em"
-                , HE.onClick (\_ -> Put_Action (wrap (Cons (default (Proxy :: Proxy a)) l)))
+            [ HP.class_ (H.ClassName "Editable-List-Cons") ]
+            [ HH.div
+                [ HP.style "display: flex; flex-direction: row; gap: 0.5em" ]
+                [ HH.button
+                    [ HP.style ""
+                    , HE.onClick (\_ -> Put_Action (wrap (Cons (default (Proxy :: Proxy a)) l)))
+                    ]
+                    [ HH.text "➕" ]
+                , HH.button
+                    [ HP.style ""
+                    , HE.onClick (\_ -> Put_Action (wrap l))
+                    ]
+                    [ HH.text "➖" ]
                 ]
-                [ HH.text "+" ]
-            , HH.div [ HP.style "padding: 0.5em" ] [ render (wrap <<< (_ `Cons` t)) h ]
-            , HH.button
-                [ HP.style "padding: 0.5em"
-                , HE.onClick (\_ -> Put_Action (wrap l))
-                ]
-                [ HH.text "-" ]
+            , render (wrap <<< (_ `Cons` t)) h
             , render (wrap <<< (h `Cons` _)) t
             ]
     in
-      [ "List" /\ true /\ (Lazy.defer \_ -> wrap l) ] /\ html
+      [ "List" /\ true /\ (Lazy.defer \_ -> wrap l) ] /\ [ html ]
   default _ = Nil
 
 -- =============================================================================
@@ -230,17 +235,18 @@ instance (GenericArgs_Editable a, GenericArgs_Editable b) => GenericArgs_Editabl
 -- Generic_Editable
 
 class Generic_Editable a where
-  generic_render' :: forall b. (a -> b) -> a -> EditableHTML b
+  generic_render' :: forall b. (a -> b) -> a -> Array (EditableHTML b)
   generic_renderOptions' :: forall b. Maybe a -> (a -> b) -> Array (String /\ Boolean /\ Lazy b)
   generic_default' :: Proxy a -> a
 
 instance Generic_Editable NoConstructors where
   generic_render' wrap v = generic_render' wrap v
-  generic_renderOptions' v wrap = generic_renderOptions' v wrap
+  generic_renderOptions' _ _ = []
   generic_default' v = generic_default' v
 
 instance (IsSymbol name, GenericArgs_Editable a) => Generic_Editable (Constructor name a) where
-  generic_render' wrap (Constructor a) = HH.div [ HP.style "" {- TODO -} ] (genericArgs_render (wrap <<< Constructor) a)
+  -- generic_render' wrap (Constructor a) = HH.div [ HP.class_ (H.ClassName "Editable-Constructor") ] (genericArgs_render (wrap <<< Constructor) a)
+  generic_render' wrap (Constructor a) = genericArgs_render (wrap <<< Constructor) a
   generic_renderOptions' mb_a wrap = [ name /\ isJust mb_a /\ (Lazy.defer \_ -> wrap (generic_default' (Proxy :: Proxy (Constructor name a)))) ]
     where
     name = reflectSymbol (Proxy :: Proxy name)
@@ -262,7 +268,7 @@ unSum f g = case _ of
 
 -- generic utilities
 
-generic_render :: forall a b rep. Generic a rep => Generic_Editable rep => (a -> b) -> a -> Array (String /\ Boolean /\ Lazy b) /\ EditableHTML b
+generic_render :: forall a b rep. Generic a rep => Generic_Editable rep => (a -> b) -> a -> Array (String /\ Boolean /\ Lazy b) /\ Array (EditableHTML b)
 generic_render wrap a = generic_renderOptions' (Just rep) (wrap <<< to) /\ generic_render' (wrap <<< to) rep
   where
   rep = from a

@@ -93,9 +93,10 @@ component = mkComponent { initialState, eval, render }
   render :: State -> _
   render { mb_show_editor, mb_err_note } =
     HH.div
-      [ HP.style "height: 100vh; display: flex; flex-direction: column" ]
-      ( [ [ HH.div
-              []
+      [ HP.style "height: 100vh; display: flex; flex-direction: column; gap: 0.5em" ]
+      ( [ [ HH.div [] [] ]
+        , [ HH.div
+              [ HP.style "padding: 0 0.5em;" ]
               [ case mb_err_note of
                   Nothing -> HH.text "no encoding"
                   Just (Left _err) -> HH.text "no encoding"
@@ -103,16 +104,21 @@ component = mkComponent { initialState, eval, render }
                     let
                       note_enc = note # Mucode.encode
                     in
-                      HH.a [ HP.href ("/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component")) ] [ HH.text note_enc ]
+                      HH.a
+                        [ HP.href ("/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component"))
+                        ]
+                        [ HH.text note_enc ]
               ]
           ]
         , case mb_show_editor of
             Nothing -> []
             Just show_editor ->
-              [ HH.div []
+              [ HH.div
+                  [ HP.style "padding: 0 0.5em;" ]
                   [ HH.button [ HE.onClick (const (Modify_ShowEditor (map not))) ] [ HH.text (if show_editor then "hide editor" else "show editor") ]
                   ]
-              , HH.div [ HP.style (if show_editor then "" else "display: none; ") ]
+              , HH.div
+                  [ HP.style (if show_editor then "border: 0.2em solid black; padding: 0.5em;" else "display: none; ") ]
                   case mb_err_note of
                     Nothing -> []
                     Just (Left _err) -> []
@@ -121,19 +127,21 @@ component = mkComponent { initialState, eval, render }
                           MuEditor.Updated note' -> Modify_Note (const (Just (Right note')))
                       ]
               ]
-
         , case mb_err_note of
             Nothing -> []
-            Just (Left err) -> [ HH.div [] [ HH.text err ] ]
+            Just (Left err) -> [ HH.div [ HP.style "padding: 0 0.5em;" ] [ HH.text err ] ]
             Just (Right note) ->
-              [ HH.slot_ (Proxy :: Proxy "page") unit component_Page
-                  { page:
-                      { name: "dynamic"
-                      , static_content: ""
-                      , stylesheet_hrefs: []
-                      , note: note <#> absurd
+              [ HH.div [ HP.style "padding: 0 0.5em;" ]
+                  [ HH.slot_ (Proxy :: Proxy "page") unit component_Page
+                      { page:
+                          { name: "dynamic"
+                          , static_content: ""
+                          , stylesheet_hrefs: []
+                          , note: note <#> absurd
+                          }
                       }
-                  }
+                  ]
               ]
+        , [ HH.div [] [] ]
         ] # Array.fold
       )

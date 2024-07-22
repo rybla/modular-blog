@@ -1925,7 +1925,7 @@
         }
       };
     }();
-    function Supervisor(util2) {
+    function Supervisor(util) {
       var fibers = {};
       var fiberId = 0;
       var count = 0;
@@ -1959,9 +1959,9 @@
                 return function() {
                   delete kills[fid];
                   killCount--;
-                  if (util2.isLeft(result) && util2.fromLeft(result)) {
+                  if (util.isLeft(result) && util.fromLeft(result)) {
                     setTimeout(function() {
-                      throw util2.fromLeft(result);
+                      throw util.fromLeft(result);
                     }, 0);
                   }
                   if (killCount === 0) {
@@ -1999,7 +1999,7 @@
     var PENDING = 4;
     var RETURN = 5;
     var COMPLETED = 6;
-    function Fiber(util2, supervisor, aff) {
+    function Fiber(util, supervisor, aff) {
       var runTick = 0;
       var status = SUSPENDED;
       var step4 = aff;
@@ -2031,12 +2031,12 @@
                 }
               } catch (e) {
                 status = RETURN;
-                fail3 = util2.left(e);
+                fail3 = util.left(e);
                 step4 = null;
               }
               break;
             case STEP_RESULT:
-              if (util2.isLeft(step4)) {
+              if (util.isLeft(step4)) {
                 status = RETURN;
                 fail3 = step4;
                 step4 = null;
@@ -2044,7 +2044,7 @@
                 status = RETURN;
               } else {
                 status = STEP_BIND;
-                step4 = util2.fromRight(step4);
+                step4 = util.fromRight(step4);
               }
               break;
             case CONTINUE:
@@ -2060,7 +2060,7 @@
                 case PURE:
                   if (bhead === null) {
                     status = RETURN;
-                    step4 = util2.right(step4._1);
+                    step4 = util.right(step4._1);
                   } else {
                     status = STEP_BIND;
                     step4 = step4._1;
@@ -2068,11 +2068,11 @@
                   break;
                 case SYNC:
                   status = STEP_RESULT;
-                  step4 = runSync(util2.left, util2.right, step4._1);
+                  step4 = runSync(util.left, util.right, step4._1);
                   break;
                 case ASYNC:
                   status = PENDING;
-                  step4 = runAsync(util2.left, step4._1, function(result2) {
+                  step4 = runAsync(util.left, step4._1, function(result2) {
                     return function() {
                       if (runTick !== localRunTick) {
                         return;
@@ -2091,7 +2091,7 @@
                   return;
                 case THROW:
                   status = RETURN;
-                  fail3 = util2.left(step4._1);
+                  fail3 = util.left(step4._1);
                   step4 = null;
                   break;
                 case CATCH:
@@ -2119,18 +2119,18 @@
                   break;
                 case FORK:
                   status = STEP_RESULT;
-                  tmp = Fiber(util2, supervisor, step4._2);
+                  tmp = Fiber(util, supervisor, step4._2);
                   if (supervisor) {
                     supervisor.register(tmp);
                   }
                   if (step4._1) {
                     tmp.run();
                   }
-                  step4 = util2.right(tmp);
+                  step4 = util.right(tmp);
                   break;
                 case SEQ:
                   status = CONTINUE;
-                  step4 = sequential3(util2, supervisor, step4._1);
+                  step4 = sequential3(util, supervisor, step4._1);
                   break;
               }
               break;
@@ -2150,7 +2150,7 @@
                       status = RETURN;
                     } else if (fail3) {
                       status = CONTINUE;
-                      step4 = attempt._2(util2.fromLeft(fail3));
+                      step4 = attempt._2(util.fromLeft(fail3));
                       fail3 = null;
                     }
                     break;
@@ -2161,13 +2161,13 @@
                       bhead = attempt._1;
                       btail = attempt._2;
                       status = STEP_BIND;
-                      step4 = util2.fromRight(step4);
+                      step4 = util.fromRight(step4);
                     }
                     break;
                   case BRACKET:
                     bracketCount--;
                     if (fail3 === null) {
-                      result = util2.fromRight(step4);
+                      result = util.fromRight(step4);
                       attempts = new Aff2(CONS, new Aff2(RELEASE, attempt._2, result), attempts, tmp);
                       if (interrupt === tmp || bracketCount > 0) {
                         status = CONTINUE;
@@ -2179,11 +2179,11 @@
                     attempts = new Aff2(CONS, new Aff2(FINALIZED, step4, fail3), attempts, interrupt);
                     status = CONTINUE;
                     if (interrupt && interrupt !== tmp && bracketCount === 0) {
-                      step4 = attempt._1.killed(util2.fromLeft(interrupt))(attempt._2);
+                      step4 = attempt._1.killed(util.fromLeft(interrupt))(attempt._2);
                     } else if (fail3) {
-                      step4 = attempt._1.failed(util2.fromLeft(fail3))(attempt._2);
+                      step4 = attempt._1.failed(util.fromLeft(fail3))(attempt._2);
                     } else {
-                      step4 = attempt._1.completed(util2.fromRight(step4))(attempt._2);
+                      step4 = attempt._1.completed(util.fromRight(step4))(attempt._2);
                     }
                     fail3 = null;
                     bracketCount++;
@@ -2213,12 +2213,12 @@
               joins = null;
               if (interrupt && fail3) {
                 setTimeout(function() {
-                  throw util2.fromLeft(fail3);
+                  throw util.fromLeft(fail3);
                 }, 0);
-              } else if (util2.isLeft(step4) && rethrow) {
+              } else if (util.isLeft(step4) && rethrow) {
                 setTimeout(function() {
                   if (rethrow) {
-                    throw util2.fromLeft(step4);
+                    throw util.fromLeft(step4);
                   }
                 }, 0);
               }
@@ -2252,26 +2252,26 @@
       function kill2(error4, cb) {
         return function() {
           if (status === COMPLETED) {
-            cb(util2.right(void 0))();
+            cb(util.right(void 0))();
             return function() {
             };
           }
           var canceler = onComplete({
             rethrow: false,
             handler: function() {
-              return cb(util2.right(void 0));
+              return cb(util.right(void 0));
             }
           })();
           switch (status) {
             case SUSPENDED:
-              interrupt = util2.left(error4);
+              interrupt = util.left(error4);
               status = COMPLETED;
               step4 = interrupt;
               run3(runTick);
               break;
             case PENDING:
               if (interrupt === null) {
-                interrupt = util2.left(error4);
+                interrupt = util.left(error4);
               }
               if (bracketCount === 0) {
                 if (status === PENDING) {
@@ -2285,7 +2285,7 @@
               break;
             default:
               if (interrupt === null) {
-                interrupt = util2.left(error4);
+                interrupt = util.left(error4);
               }
               if (bracketCount === 0) {
                 status = RETURN;
@@ -2328,7 +2328,7 @@
         }
       };
     }
-    function runPar(util2, supervisor, par, cb) {
+    function runPar(util, supervisor, par, cb) {
       var fiberId = 0;
       var fibers = {};
       var killId = 0;
@@ -2383,7 +2383,7 @@
           }
         }
         if (count === 0) {
-          cb2(util2.right(void 0))();
+          cb2(util.right(void 0))();
         } else {
           kid = 0;
           tmp = count;
@@ -2395,7 +2395,7 @@
       }
       function join3(result, head5, tail2) {
         var fail3, step4, lhs, rhs, tmp, kid;
-        if (util2.isLeft(result)) {
+        if (util.isLeft(result)) {
           fail3 = result;
           step4 = null;
         } else {
@@ -2420,7 +2420,7 @@
           switch (head5.tag) {
             case MAP:
               if (fail3 === null) {
-                head5._3 = util2.right(head5._1(util2.fromRight(step4)));
+                head5._3 = util.right(head5._1(util.fromRight(step4)));
                 step4 = head5._3;
               } else {
                 head5._3 = fail3;
@@ -2452,17 +2452,17 @@
               } else if (lhs === EMPTY || rhs === EMPTY) {
                 return;
               } else {
-                step4 = util2.right(util2.fromRight(lhs)(util2.fromRight(rhs)));
+                step4 = util.right(util.fromRight(lhs)(util.fromRight(rhs)));
                 head5._3 = step4;
               }
               break;
             case ALT:
               lhs = head5._1._3;
               rhs = head5._2._3;
-              if (lhs === EMPTY && util2.isLeft(rhs) || rhs === EMPTY && util2.isLeft(lhs)) {
+              if (lhs === EMPTY && util.isLeft(rhs) || rhs === EMPTY && util.isLeft(lhs)) {
                 return;
               }
-              if (lhs !== EMPTY && util2.isLeft(lhs) && rhs !== EMPTY && util2.isLeft(rhs)) {
+              if (lhs !== EMPTY && util.isLeft(lhs) && rhs !== EMPTY && util.isLeft(rhs)) {
                 fail3 = step4 === lhs ? rhs : lhs;
                 step4 = null;
                 head5._3 = fail3;
@@ -2544,7 +2544,7 @@
                   status = RETURN;
                   tmp = step4;
                   step4 = new Aff2(FORKED, fid, new Aff2(CONS, head5, tail2), EMPTY);
-                  tmp = Fiber(util2, supervisor, tmp);
+                  tmp = Fiber(util, supervisor, tmp);
                   tmp.onComplete({
                     rethrow: false,
                     handler: resolve(step4)
@@ -2582,7 +2582,7 @@
         }
       }
       function cancel(error4, cb2) {
-        interrupt = util2.left(error4);
+        interrupt = util.left(error4);
         var innerKills;
         for (var kid in kills) {
           if (kills.hasOwnProperty(kid)) {
@@ -2618,10 +2618,10 @@
         });
       };
     }
-    function sequential3(util2, supervisor, par) {
+    function sequential3(util, supervisor, par) {
       return new Aff2(ASYNC, function(cb) {
         return function() {
-          return runPar(util2, supervisor, par, cb);
+          return runPar(util, supervisor, par, cb);
         };
       });
     }
@@ -2691,9 +2691,9 @@
       };
     };
   }
-  function _makeFiber(util2, aff) {
+  function _makeFiber(util, aff) {
     return function() {
-      return Aff.Fiber(util2, null, aff);
+      return Aff.Fiber(util, null, aff);
     };
   }
   var _sequential = Aff.Seq;
@@ -7731,51 +7731,10 @@
     return runFn3(_decodeURIComponent)($$const(Nothing.value))(Just.create);
   }();
 
-  // output/Debug/foreign.js
-  var req = typeof module === "undefined" ? void 0 : module.require;
-  var util = function() {
-    try {
-      return req === void 0 ? void 0 : req("util");
-    } catch (e) {
-      return void 0;
-    }
-  }();
-  function _trace(x, k) {
-    if (util !== void 0) {
-      console.log(util.inspect(x, { depth: null, colors: true }));
-    } else {
-      console.log(x);
-    }
-    return k({});
-  }
-  var now = function() {
-    var perf;
-    if (typeof performance !== "undefined") {
-      perf = performance;
-    } else if (req) {
-      try {
-        perf = req("perf_hooks").performance;
-      } catch (e) {
-      }
-    }
-    return function() {
-      return (perf || Date).now();
-    };
-  }();
-
-  // output/Debug/index.js
-  var trace = function() {
-    return function(a2) {
-      return function(k) {
-        return _trace(a2, k);
-      };
-    };
-  };
-
   // output/ModularBlog.Common.MuEditor/index.js
-  var trace2 = /* @__PURE__ */ trace();
   var identity9 = /* @__PURE__ */ identity(categoryFn);
   var value13 = /* @__PURE__ */ value12(isPropString);
+  var fold3 = /* @__PURE__ */ fold2(monoidArray);
   var show2 = /* @__PURE__ */ show(showString);
   var map23 = /* @__PURE__ */ map(functorArray);
   var append12 = /* @__PURE__ */ append(semigroupArray);
@@ -7783,6 +7742,7 @@
   var discard6 = /* @__PURE__ */ discard(discardUnit)(bindHalogenM);
   var modify_3 = /* @__PURE__ */ modify_(monadStateHalogenM);
   var pure10 = /* @__PURE__ */ pure(applicativeHalogenM);
+  var put2 = /* @__PURE__ */ put(monadStateHalogenM);
   var Updated = /* @__PURE__ */ function() {
     function Updated2(value0) {
       this.value0 = value0;
@@ -7802,6 +7762,16 @@
       return new Put_Action2(value0);
     };
     return Put_Action2;
+  }();
+  var Receive_Action = /* @__PURE__ */ function() {
+    function Receive_Action2(value0) {
+      this.value0 = value0;
+    }
+    ;
+    Receive_Action2.create = function(value0) {
+      return new Receive_Action2(value0);
+    };
+    return Receive_Action2;
   }();
   var genericArgs_EditableNoArg = {
     genericArgs_render: function(_wrap) {
@@ -7826,16 +7796,14 @@
       return function(s) {
         return new Tuple([new Tuple("String", new Tuple(true, defer3(function(v) {
           return wrap3(s);
-        })))], div2([])([textarea([onChange(function(event) {
-          return trace2("textarea onChange")(function(v) {
-            var s$prime = unsafePerformEffect(value11(maybe$prime(function(v1) {
-              return unsafeCrashWith("event target couldn't be converted into a HTMLSelectElement");
-            })(identity9)(fromEventTarget2(maybe$prime(function(v1) {
-              return unsafeCrashWith("even did not have an event target");
-            })(identity9)(target5(event))))));
-            return new Put_Action(wrap3(s$prime));
-          });
-        }), value13(s)])]));
+        })))], [textarea([class_("Editable-String"), onChange(function(event) {
+          var s$prime = unsafePerformEffect(value11(maybe$prime(function(v) {
+            return unsafeCrashWith("event target couldn't be converted into a HTMLSelectElement");
+          })(identity9)(fromEventTarget2(maybe$prime(function(v) {
+            return unsafeCrashWith("even did not have an event target");
+          })(identity9)(target5(event))))));
+          return new Put_Action(wrap3(s$prime));
+        }), value13(s)])]);
       };
     },
     "default": function(v) {
@@ -7853,7 +7821,7 @@
           return g(v.value0);
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 259, column 13 - line 261, column 15): " + [v.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 265, column 13 - line 267, column 15): " + [v.constructor.name]);
       };
     };
   };
@@ -7865,35 +7833,49 @@
     return function(wrap3) {
       return function(a2) {
         var v = render$prime1(wrap3)(a2);
-        var $134 = length(v.value0) === 1;
-        if ($134) {
-          return v.value1;
-        }
-        ;
-        return div2([style("display: flex; flex-direction: column; gap: 0.5em")])([select3([onValueChange(function(name15) {
-          return function(v1) {
-            return new Put_Action(force(v1.value1.value1));
-          }(maybe$prime(function(v1) {
-            return unsafeCrashWith("unrecognized constructor name: " + show2(name15));
-          })(identity9)(find2(function(v1) {
-            return name15 === v1.value0;
-          })(v.value0)));
-        }), onChange(function(event) {
-          var name15 = unsafePerformEffect(value10(maybe$prime(function(v1) {
-            return unsafeCrashWith("event target couldn't be converted into a HTMLSelectElement");
-          })(identity9)(fromEventTarget(maybe$prime(function(v1) {
-            return unsafeCrashWith("even did not have an event target");
-          })(identity9)(target5(event))))));
-          return function(v1) {
-            return new Put_Action(force(v1.value1.value1));
-          }(maybe$prime(function(v1) {
-            return unsafeCrashWith("unrecognized constructor name: " + show2(name15));
-          })(identity9)(find2(function(v1) {
-            return name15 === v1.value0;
-          })(v.value0)));
-        })])(map23(function(v1) {
-          return option([value13(v1.value0), selected2(v1.value1.value0)])([text5(v1.value0)]);
-        })(v.value0)), v.value1]);
+        return div2([class_("Editable-Constructor")])(fold3([function() {
+          var $136 = length(v.value0) === 1;
+          if ($136) {
+            return [];
+          }
+          ;
+          return [select3([onValueChange(function(name15) {
+            return function(v1) {
+              return new Put_Action(force(v1.value1.value1));
+            }(maybe$prime(function(v1) {
+              return unsafeCrashWith("unrecognized constructor name: " + show2(name15));
+            })(identity9)(find2(function(v1) {
+              return name15 === v1.value0;
+            })(v.value0)));
+          }), onChange(function(event) {
+            var name15 = unsafePerformEffect(value10(maybe$prime(function(v1) {
+              return unsafeCrashWith("event target couldn't be converted into a HTMLSelectElement");
+            })(identity9)(fromEventTarget(maybe$prime(function(v1) {
+              return unsafeCrashWith("even did not have an event target");
+            })(identity9)(target5(event))))));
+            return function(v1) {
+              return new Put_Action(force(v1.value1.value1));
+            }(maybe$prime(function(v1) {
+              return unsafeCrashWith("unrecognized constructor name: " + show2(name15));
+            })(identity9)(find2(function(v1) {
+              return name15 === v1.value0;
+            })(v.value0)));
+          })])(map23(function(v1) {
+            return option([value13(v1.value0), selected2(v1.value1.value0)])([text5(v1.value0)]);
+          })(v.value0))];
+        }(), function() {
+          var $158 = length(v.value1) === 0;
+          if ($158) {
+            return [];
+          }
+          ;
+          var $159 = length(v.value0) === 1;
+          if ($159) {
+            return v.value1;
+          }
+          ;
+          return [div2([class_("Editable-Args")])(v.value1)];
+        }()]));
       };
     };
   };
@@ -7912,10 +7894,10 @@
       return function(wrap3) {
         return function(a2) {
           var rep = from3(a2);
-          return new Tuple(generic_renderOptions$prime1(new Just(rep))(function($193) {
-            return wrap3(to2($193));
-          }), generic_render$prime1(function($194) {
-            return wrap3(to2($194));
+          return new Tuple(generic_renderOptions$prime1(new Just(rep))(function($198) {
+            return wrap3(to2($198));
+          }), generic_render$prime1(function($199) {
+            return wrap3(to2($199));
           })(rep));
         };
       };
@@ -7935,26 +7917,26 @@
         "generic_render'": function(wrap3) {
           return function(v) {
             if (v instanceof Inl) {
-              return generic_render$prime1(function($195) {
-                return wrap3(Inl.create($195));
+              return generic_render$prime1(function($200) {
+                return wrap3(Inl.create($200));
               })(v.value0);
             }
             ;
             if (v instanceof Inr) {
-              return generic_render$prime2(function($196) {
-                return wrap3(Inr.create($196));
+              return generic_render$prime2(function($201) {
+                return wrap3(Inr.create($201));
               })(v.value0);
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 250, column 26 - line 252, column 46): " + [v.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 256, column 26 - line 258, column 46): " + [v.constructor.name]);
           };
         },
         "generic_renderOptions'": function(mb_sum) {
           return function(wrap3) {
-            return append12(generic_renderOptions$prime1(bind6(mb_sum)(unSum(Just.create)($$const(Nothing.value))))(function($197) {
-              return wrap3(Inl.create($197));
-            }))(generic_renderOptions$prime2(bind6(mb_sum)(unSum($$const(Nothing.value))(Just.create)))(function($198) {
-              return wrap3(Inr.create($198));
+            return append12(generic_renderOptions$prime1(bind6(mb_sum)(unSum(Just.create)($$const(Nothing.value))))(function($202) {
+              return wrap3(Inl.create($202));
+            }))(generic_renderOptions$prime2(bind6(mb_sum)(unSum($$const(Nothing.value))(Just.create)))(function($203) {
+              return wrap3(Inr.create($203));
             }));
           };
         },
@@ -7988,15 +7970,15 @@
       return {
         genericArgs_render: function(wrap3) {
           return function(v) {
-            var bs = genericArgs_render2(function($199) {
+            var bs = genericArgs_render2(function($204) {
               return wrap3(function(v1) {
                 return new Product(v.value0, v1);
-              }($199));
+              }($204));
             })(v.value1);
-            var as = genericArgs_render1(function($200) {
+            var as = genericArgs_render1(function($205) {
               return wrap3(function(v1) {
                 return new Product(v1, v.value1);
-              }($200));
+              }($205));
             })(v.value0);
             return append12(as)(bs);
           };
@@ -8015,9 +7997,9 @@
       return {
         "generic_render'": function(wrap3) {
           return function(v) {
-            return div2([style("")])(genericArgs_render1(function($201) {
-              return wrap3(Constructor($201));
-            })(v));
+            return genericArgs_render1(function($206) {
+              return wrap3(Constructor($206));
+            })(v);
           };
         },
         "generic_renderOptions'": function(mb_a) {
@@ -8045,32 +8027,32 @@
         return function(l) {
           var html2 = function() {
             if (l instanceof Nil) {
-              return div2([style("padding: 0.5em")])([button([style("padding: 0.5em"), onClick(function(v) {
+              return div2([])([button([style(""), onClick(function(v) {
                 return new Put_Action(wrap3(new Cons(default1($$Proxy.value), l)));
-              })])([text5("+")])]);
+              })])([text5("\u2795")])]);
             }
             ;
             if (l instanceof Cons) {
-              return div2([])([button([style("padding: 0.5em"), onClick(function(v) {
+              return div2([class_("Editable-List-Cons")])([div2([style("display: flex; flex-direction: row; gap: 0.5em")])([button([style(""), onClick(function(v) {
                 return new Put_Action(wrap3(new Cons(default1($$Proxy.value), l)));
-              })])([text5("+")]), div2([style("padding: 0.5em")])([render1(function($202) {
+              })])([text5("\u2795")]), button([style(""), onClick(function(v) {
+                return new Put_Action(wrap3(l));
+              })])([text5("\u2796")])]), render1(function($207) {
                 return wrap3(function(v) {
                   return new Cons(v, l.value1);
-                }($202));
-              })(l.value0)]), button([style("padding: 0.5em"), onClick(function(v) {
-                return new Put_Action(wrap3(l));
-              })])([text5("-")]), render(editableList(dictEditable))(function($203) {
+                }($207));
+              })(l.value0), render(editableList(dictEditable))(function($208) {
                 return wrap3(function(v) {
                   return new Cons(l.value0, v);
-                }($203));
+                }($208));
               })(l.value1)]);
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 165, column 14 - line 190, column 14): " + [l.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 167, column 14 - line 195, column 14): " + [l.constructor.name]);
           }();
           return new Tuple([new Tuple("List", new Tuple(true, defer3(function(v) {
             return wrap3(l);
-          })))], html2);
+          })))], [html2]);
         };
       },
       "default": function(v) {
@@ -8084,8 +8066,8 @@
     return {
       genericArgs_render: function(wrap3) {
         return function(v) {
-          return [render1(function($204) {
-            return wrap3(Argument($204));
+          return [render1(function($209) {
+            return wrap3(Argument($209));
           })(v)];
         };
       },
@@ -8106,40 +8088,50 @@
     };
     var handleQuery = function(v) {
       return discard6(modify_3(function(v1) {
-        var $183 = {};
-        for (var $184 in v1) {
-          if ({}.hasOwnProperty.call(v1, $184)) {
-            $183[$184] = v1[$184];
+        var $187 = {};
+        for (var $188 in v1) {
+          if ({}.hasOwnProperty.call(v1, $188)) {
+            $187[$188] = v1[$188];
           }
           ;
         }
         ;
-        $183.val = v.value0;
-        return $183;
+        $187.val = v.value0;
+        return $187;
       }))(function() {
         return pure10(new Just(v.value1));
       });
     };
     var handleAction = function(v) {
-      return discard6(modify_3(function(v1) {
-        var $189 = {};
-        for (var $190 in v1) {
-          if ({}.hasOwnProperty.call(v1, $190)) {
-            $189[$190] = v1[$190];
+      if (v instanceof Put_Action) {
+        return discard6(modify_3(function(v1) {
+          var $193 = {};
+          for (var $194 in v1) {
+            if ({}.hasOwnProperty.call(v1, $194)) {
+              $193[$194] = v1[$194];
+            }
+            ;
           }
           ;
-        }
-        ;
-        $189.val = v.value0;
-        return $189;
-      }))(function() {
-        return raise(new Updated(v.value0));
-      });
+          $193.val = v.value0;
+          return $193;
+        }))(function() {
+          return raise(new Updated(v.value0));
+        });
+      }
+      ;
+      if (v instanceof Receive_Action) {
+        return put2(initialState(v.value0));
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 62, column 18 - line 66, column 55): " + [v.constructor.name]);
     };
     var $$eval = mkEval({
-      receive: defaultEval.receive,
       initialize: defaultEval.initialize,
       finalize: defaultEval.finalize,
+      receive: function($210) {
+        return Just.create(Receive_Action.create($210));
+      },
       handleQuery,
       handleAction
     });
@@ -9722,14 +9714,14 @@
   var show13 = /* @__PURE__ */ show(showGroup);
   var lookup6 = /* @__PURE__ */ lookup(ordString);
   var map27 = /* @__PURE__ */ map(/* @__PURE__ */ functorStateT(functorIdentity));
-  var fold3 = /* @__PURE__ */ fold(foldableList)(monoidArray);
+  var fold4 = /* @__PURE__ */ fold(foldableList)(monoidArray);
   var sequence2 = /* @__PURE__ */ sequence(traversableList)(applicativeStateT2);
   var map110 = /* @__PURE__ */ map(functorList);
   var discard8 = /* @__PURE__ */ discard(discardUnit);
   var discard23 = /* @__PURE__ */ discard8(bindHalogenM);
   var liftEffect7 = /* @__PURE__ */ liftEffect(/* @__PURE__ */ monadEffectHalogenM(monadEffectAff));
   var pure23 = /* @__PURE__ */ pure(applicativeHalogenM);
-  var put2 = /* @__PURE__ */ put(monadStateHalogenM);
+  var put3 = /* @__PURE__ */ put(monadStateHalogenM);
   var renderNoteExtraRenderNote = {
     renderNoteInject: /* @__PURE__ */ unwrap()
   };
@@ -9786,7 +9778,7 @@
       }
       ;
       if (v instanceof Grouped) {
-        return renderGrouped(v.value0)(map27(fold3)(sequence2(map110(renderNote(dictRenderNoteExtra))(v.value1))));
+        return renderGrouped(v.value0)(map27(fold4)(sequence2(map110(renderNote(dictRenderNoteExtra))(v.value1))));
       }
       ;
       if (v instanceof Inject) {
@@ -9814,7 +9806,7 @@
       }
       ;
       if (v instanceof Receive_PageAction) {
-        return put2(initialState(v.value0));
+        return put3(initialState(v.value0));
       }
       ;
       throw new Error("Failed pattern match at ModularBlog.Content.Rendering (line 39, column 18 - line 43, column 59): " + [v.constructor.name]);
@@ -9861,7 +9853,7 @@
   var fromString = urlSearchParamsImpl;
 
   // output/ModularBlog.App.Index/index.js
-  var fold4 = /* @__PURE__ */ fold2(monoidArray);
+  var fold5 = /* @__PURE__ */ fold2(monoidArray);
   var encode2 = /* @__PURE__ */ encode(encodePlainNote);
   var map28 = /* @__PURE__ */ map(functorMaybe);
   var not3 = /* @__PURE__ */ not(heytingAlgebraBoolean);
@@ -9932,7 +9924,7 @@
   }();
   var component2 = /* @__PURE__ */ function() {
     var render2 = function(v) {
-      return div2([style("height: 100vh; display: flex; flex-direction: column")])(fold4([[div2([])([function() {
+      return div2([style("height: 100vh; display: flex; flex-direction: column; gap: 0.5em")])(fold5([[div2([])([])], [div2([style("padding: 0 0.5em;")])([function() {
         if (v.mb_err_note instanceof Nothing) {
           return text5("no encoding");
         }
@@ -9946,14 +9938,14 @@
           return a([href4("/?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc)))])([text5(note_enc)]);
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 99, column 17 - line 106, column 166): " + [v.mb_err_note.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 100, column 17 - line 110, column 45): " + [v.mb_err_note.constructor.name]);
       }()])], function() {
         if (v.mb_show_editor instanceof Nothing) {
           return [];
         }
         ;
         if (v.mb_show_editor instanceof Just) {
-          return [div2([])([button([onClick($$const(new Modify_ShowEditor(map28(not3))))])([text5(function() {
+          return [div2([style("padding: 0 0.5em;")])([button([onClick($$const(new Modify_ShowEditor(map28(not3))))])([text5(function() {
             if (v.mb_show_editor.value0) {
               return "hide editor";
             }
@@ -9961,7 +9953,7 @@
             return "show editor";
           }())])]), div2([style(function() {
             if (v.mb_show_editor.value0) {
-              return "";
+              return "border: 0.2em solid black; padding: 0.5em;";
             }
             ;
             return "display: none; ";
@@ -9982,33 +9974,33 @@
               })];
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.App.Index (line 116, column 19 - line 122, column 24): " + [v.mb_err_note.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.App.Index (line 122, column 19 - line 128, column 24): " + [v.mb_err_note.constructor.name]);
           }())];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 109, column 11 - line 123, column 16): " + [v.mb_show_editor.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 113, column 11 - line 129, column 16): " + [v.mb_show_editor.constructor.name]);
       }(), function() {
         if (v.mb_err_note instanceof Nothing) {
           return [];
         }
         ;
         if (v.mb_err_note instanceof Just && v.mb_err_note.value0 instanceof Left) {
-          return [div2([])([text5(v.mb_err_note.value0.value0)])];
+          return [div2([style("padding: 0 0.5em;")])([text5(v.mb_err_note.value0.value0)])];
         }
         ;
         if (v.mb_err_note instanceof Just && v.mb_err_note.value0 instanceof Right) {
-          return [slot_2($$Proxy.value)(unit)(component_Page)({
+          return [div2([style("padding: 0 0.5em;")])([slot_2($$Proxy.value)(unit)(component_Page)({
             page: {
               name: "dynamic",
               static_content: "",
               stylesheet_hrefs: [],
               note: mapFlipped3(v.mb_err_note.value0.value0)(absurd)
             }
-          })];
+          })])];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 125, column 11 - line 137, column 16): " + [v.mb_err_note.constructor.name]);
-      }()]));
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 131, column 11 - line 145, column 16): " + [v.mb_err_note.constructor.name]);
+      }(), [div2([])([])]]));
     };
     var initialState = function(v) {
       return {
