@@ -7,60 +7,105 @@ import Data.Array as Array
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from, to)
 import Data.Lazy (Lazy)
 import Data.Lazy as Lazy
-import Data.Maybe (maybe')
+import Data.Maybe (Maybe(..), maybe')
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect.Aff (Aff)
+import Halogen (HalogenM)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import ModularBlog.Common.Types (PlainNote)
 import Partial.Unsafe (unsafeCrashWith)
 import Type.Prelude (class IsSymbol, Proxy(..), reflectSymbol)
 
-type EditableHTML = H.ComponentHTML Action Slots Aff
+type EditableHTML e = H.ComponentHTML (Action e) Slots Aff
 
-data Query e a
-type Input e = {}
-data Output = New_Note PlainNote
-type State e = {}
-data Action = Put_Note PlainNote
+data Query e a = Put_Query e a
+
+derive instance Functor (Query e)
+
+type Input e = { val :: e }
+
+data Output e = Updated e
+
+type State e = { val :: e }
+
+data Action e = Put_Action e
+
+type Slots :: Row Type
 type Slots = ()
 
 -- =============================================================================
 -- editorComponent
 -- =============================================================================
 
-component :: forall e. Editable e => H.Component (Query e) (Input e) Output Aff
-component = unsafeCrashWith ""
+component :: forall e. Editable e => H.Component (Query e) (Input e) (Output e) Aff
+component = H.mkComponent { initialState, eval, render: renderComponent }
+  where
+  initialState { val } = { val }
+
+  eval = H.mkEval H.defaultEval { handleQuery = handleQuery }
+
+  handleQuery :: forall a. Query e a -> HalogenM (State e) (Action e) Slots (Output e) Aff (Maybe a)
+  handleQuery = case _ of
+    Put_Query val a -> do
+      H.modify_ _ { val = val }
+      pure (Just a)
+
+  renderComponent { val } = render identity val
 
 -- =============================================================================
 -- Editable
 -- =============================================================================
 
 class Editable a where
-  render' :: (a -> PlainNote) -> a -> Array (String /\ Lazy PlainNote /\ EditableHTML) /\ EditableHTML
+  render' :: forall b. (a -> b) -> a -> Array (String /\ Lazy b) /\ EditableHTML b
   default :: Proxy a -> a
 
-render :: forall a. Editable a => (a -> PlainNote) -> a -> EditableHTML
+render :: forall a b. Editable a => (a -> b) -> a -> EditableHTML b
 render wrap a =
   let
     options /\ h = render' wrap a
   in
-    HH.div
-      [ HP.style "display: flex; flex-direction: column; gap: 0.5em" ]
-      [ HH.select
-          [ HE.onValueChange
-              ( \name ->
-                  options
-                    # Array.find (\(name' /\ _ /\ _) -> name == name')
-                    # maybe' (\_ -> unsafeCrashWith ("unrecognized constructor name: " <> show name)) identity
-                    # (\(_ /\ lazy_note /\ _) -> Put_Note (lazy_note # Lazy.force))
-              )
-          ]
-          (options # map (\(_ /\ _ /\ h') -> h'))
-      , h
-      ]
+    if Array.length options == 1 then
+      h
+    else
+      HH.div
+        [ HP.style "display: flex; flex-direction: column; gap: 0.5em" ]
+        [ HH.select
+            [ HE.onValueChange
+                ( \name ->
+                    options
+                      # Array.find (\(name' /\ _) -> name == name')
+                      # maybe' (\_ -> unsafeCrashWith ("unrecognized constructor name: " <> show name)) identity
+                      # (\(_ /\ lazy_b) -> Put_Action (lazy_b # Lazy.force))
+                )
+            ]
+            (options # map (\(name /\ _) -> HH.select [ HP.value name ] [ HH.text name ]))
+        , h
+        ]
+
+-- =============================================================================
+-- standard instances
+-- =============================================================================
+
+instance Editable Int where
+  render' wrap i =
+    [ "Int" /\ (Lazy.defer \_ -> wrap i) ] /\
+      HH.div [] [ HH.text (show i) ]
+  default _ = 0
+
+instance Editable Boolean where
+  render' wrap b =
+    [ "Boolean" /\ (Lazy.defer \_ -> wrap b) ] /\
+      HH.div [] [ HH.text (show b) ]
+  default _ = false
+
+instance Editable String where
+  render' wrap s =
+    [ "String" /\ (Lazy.defer \_ -> wrap s) ] /\
+      HH.div [] [ HH.textarea [ HE.onValueChange (Put_Action <<< wrap), HP.value s ] ]
+  default _ = ""
 
 -- =============================================================================
 -- GenericCases_Editable
@@ -77,7 +122,7 @@ forms of generic representations of types:
 -- GenericArgs_Editable
 
 class GenericArgs_Editable a where
-  genericArgs_render :: (a -> PlainNote) -> a -> Array EditableHTML
+  genericArgs_render :: forall b. (a -> b) -> a -> Array (EditableHTML b)
   genericArgs_default :: Proxy a -> a
 
 instance GenericArgs_Editable NoArguments where
@@ -100,8 +145,8 @@ instance (GenericArgs_Editable a, GenericArgs_Editable b) => GenericArgs_Editabl
 -- Generic_Editable
 
 class Generic_Editable a where
-  generic_render' :: (a -> PlainNote) -> a -> EditableHTML
-  generic_renderOptions' :: Proxy a -> (a -> PlainNote) -> Array (String /\ Lazy PlainNote /\ EditableHTML)
+  generic_render' :: forall b. (a -> b) -> a -> EditableHTML b
+  generic_renderOptions' :: forall b. Proxy a -> (a -> b) -> Array (String /\ Lazy b)
   generic_default' :: Proxy a -> a
 
 instance Generic_Editable NoConstructors where
@@ -111,7 +156,7 @@ instance Generic_Editable NoConstructors where
 
 instance (IsSymbol name, GenericArgs_Editable a) => Generic_Editable (Constructor name a) where
   generic_render' wrap (Constructor a) = HH.div [ HP.class_ (H.ClassName "Editable-Constructor") ] (genericArgs_render (wrap <<< Constructor) a)
-  generic_renderOptions' p wrap = [ name /\ (Lazy.defer \_ -> wrap (generic_default' p)) /\ HH.select [ HP.value name ] [ HH.text name ] ]
+  generic_renderOptions' p wrap = [ name /\ (Lazy.defer \_ -> wrap (generic_default' p)) ]
     where
     name = reflectSymbol (Proxy :: Proxy name)
   generic_default' _ = Constructor (genericArgs_default (Proxy :: Proxy a))
@@ -125,10 +170,10 @@ instance (Generic_Editable a, Generic_Editable b) => Generic_Editable (Sum a b) 
 
 -- generic utilities
 
-generic_render :: forall a rep. Generic a rep => Generic_Editable rep => (a -> PlainNote) -> a -> EditableHTML
+generic_render :: forall a b rep. Generic a rep => Generic_Editable rep => (a -> b) -> a -> EditableHTML b
 generic_render wrap a = generic_render' (wrap <<< to) (from a)
 
-generic_renderOptions :: forall a rep. Generic a rep => Generic_Editable rep => Proxy a -> (a -> PlainNote) -> Array (String /\ Lazy PlainNote /\ EditableHTML)
+generic_renderOptions :: forall a b rep. Generic a rep => Generic_Editable rep => Proxy a -> (a -> b) -> Array (String /\ Lazy b)
 generic_renderOptions _ wrap = generic_renderOptions' (Proxy :: Proxy rep) (wrap <<< to)
 
 generic_default :: forall a rep. Generic a rep => Generic_Editable rep => Proxy a -> a
