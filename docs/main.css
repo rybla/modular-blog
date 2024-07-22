@@ -10,8 +10,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  /* padding-left: 0.4em;
-  border-left: 0.2em solid black; */
 }
 
 .Editable-Args {
@@ -39,21 +37,25 @@ body {
   gap: 0.5em;
 }
 
-/* .Editable-List-Cons > .Editable-Constructor > .EditableArgs {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  padding-left: 0.4em;
-  border-left: 0.2em solid black;
-} */
+/* Page */
 
+.Page-Body {
+  padding: 1em;
+  width: 40em;
+  margin: auto;
+}
 
 /* Note */
+
+/* Note Group */
 
 .Row {
   display: flex;
   flex-direction: row;
   gap: 0.5em;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }
 
 .Column {
@@ -61,6 +63,8 @@ body {
   flex-direction: column;
   gap: 0.5em;
 }
+
+/* Note Style */
 
 .Quote {
   font-style: italic;
@@ -76,4 +80,21 @@ body {
 .Code {
   font-family: 'Courier New', Courier, monospace;
   white-space: pre;
+}
+
+.Title {
+  font-size: 3em;
+}
+
+.Subtitle {
+  font-size: 2em;
+}
+
+.Section {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.Subsection {
+  font-size: 1.5em;
 }

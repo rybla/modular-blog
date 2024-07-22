@@ -13,7 +13,7 @@ import Effect.Aff (Aff, error, throwError)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import ModularBlog.Common.Types (Group, Note(..), NoteHTML, PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
+import ModularBlog.Common.Types (Group, Note(..), NoteHTML, NoteName(..), PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
 import ModularBlog.Content.Notes (notes)
 import Web.DOM as Web.DOM
 import Web.DOM.Element as Web.DOM.Element
@@ -80,7 +80,7 @@ renderNote :: forall extra. RenderNoteExtra extra => Note extra -> RenderM (Arra
 renderNote = case _ of
   Hole -> pure [ HH.span [ HP.class_ (H.ClassName "Hole") ] [] ]
   Literal str -> pure [ HH.span [ HP.class_ (H.ClassName "Literal") ] [ HH.text str ] ]
-  Named name -> case name `Map.lookup` notes of
+  Named (NoteName name) -> case name `Map.lookup` notes of
     Nothing | name == "" -> pure []
     Nothing -> pure [ HH.span [ HP.style "background-color: lightpink" ] [ HH.text ("unrecognized note name: " <> name) ] ]
     Just note -> renderNote note

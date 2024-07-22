@@ -7,6 +7,7 @@ import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.Newtype (class Newtype)
 import Data.Show.Generic (genericShow)
+import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
 import Halogen as H
 import ModularBlog.Common.MuEditor as MuEditor
@@ -37,15 +38,11 @@ data PageAction
   | Receive_PageAction PageInput
 
 -- =============================================================================
--- Note
+-- Note meta
 -- =============================================================================
 
 -- | `PlainNote` supports `Decode` and `Encode`.
 type PlainNote = Note Void
-
-instance MuEditor.Editable PlainNote where
-  render' x y = MuEditor.generic_render x y
-  default x = MuEditor.generic_default x
 
 -- | `PlainNote` DOESN'T support `Decode` and `Encode`.
 type HyperNote = Note RenderNoteHTML
@@ -54,10 +51,14 @@ newtype RenderNoteHTML = RenderNoteHTML (RenderM (Array NoteHTML))
 
 derive instance Newtype RenderNoteHTML _
 
+-- =============================================================================
+-- Note
+-- =============================================================================
+
 data Note a
   = Hole
   | Literal String
-  | Named String
+  | Named NoteName
   | Styled Style (Note a)
   | Grouped Group (List (Note a))
   | Inject a
@@ -72,8 +73,33 @@ instance MuCode.Encode PlainNote where
 instance MuCode.Decode PlainNote where
   parse x = MuCode.generic_parse x
 
+instance MuEditor.Editable PlainNote where
+  render' x y = MuEditor.generic_render x y
+  default x = MuEditor.generic_default x
+
+newtype NoteName = NoteName String
+
+derive instance Newtype NoteName _
+derive instance Generic NoteName _
+derive newtype instance Eq NoteName
+derive newtype instance Ord NoteName
+
+instance MuCode.Encode NoteName where
+  encode x = MuCode.generic_encode x
+
+instance MuCode.Decode NoteName where
+  parse x = MuCode.generic_parse x
+
+instance MuEditor.Editable NoteName where
+  render' wrap x = MuEditor.generic_render wrap x
+  default x = MuEditor.generic_default x
+
 data Style
-  = Quote
+  = Title
+  | Subtitle
+  | Section
+  | Subsection
+  | Quote
   | Block
   | Code
 
@@ -93,8 +119,8 @@ instance MuEditor.Editable Style where
   default x = MuEditor.generic_default x
 
 data Group
-  = Row
-  | Column
+  = Column
+  | Row
 
 derive instance Generic Group _
 

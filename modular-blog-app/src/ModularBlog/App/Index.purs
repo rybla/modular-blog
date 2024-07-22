@@ -51,6 +51,7 @@ data Action
   = Initialize
   | Modify_ShowEditor (Maybe Boolean -> Maybe Boolean)
   | Modify_Note (Maybe (String \/ PlainNote) -> Maybe (String \/ PlainNote))
+  | OpenLink String
 
 component :: H.Component Query Input Output Aff
 component = mkComponent { initialState, eval, render }
@@ -89,34 +90,44 @@ component = mkComponent { initialState, eval, render }
         _ -> pure unit
     Modify_ShowEditor f -> H.modify_ (prop _mb_show_editor f)
     Modify_Note f -> H.modify_ (prop _mb_err_note f)
+    OpenLink url -> (Web.HTML.Window.open url "_self" "" =<< Web.HTML.window) # H.liftEffect # void
+
+  href_of_note_enc :: String -> String
+  href_of_note_enc note_enc = "/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component")
 
   render :: State -> _
   render { mb_show_editor, mb_err_note } =
     HH.div
-      [ HP.style "height: 100vh; display: flex; flex-direction: column; gap: 0.5em" ]
-      ( [ [ HH.div [] [] ]
-        , [ HH.div
-              [ HP.style "padding: 0 0.5em;" ]
-              [ case mb_err_note of
-                  Nothing -> HH.text "no encoding"
-                  Just (Left _err) -> HH.text "no encoding"
-                  Just (Right note) ->
-                    let
-                      note_enc = note # Mucode.encode
-                    in
-                      HH.a
-                        [ HP.href ("/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component"))
-                        ]
-                        [ HH.text note_enc ]
+      [ HP.style "display: flex; flex-direction: column; gap: 0.5em; padding: 1em 0" ]
+      ( [ case mb_show_editor of
+            Nothing -> []
+            Just _ ->
+              [ HH.div
+                  [ HP.style "padding: 0 0.5em;" ]
+                  [ case mb_err_note of
+                      Nothing -> HH.text "no encoding"
+                      Just (Left _err) -> HH.text "no encoding"
+                      Just (Right note) ->
+                        let
+                          note_enc = note # Mucode.encode
+                        in
+                          HH.a
+                            [ HP.href ("/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component"))
+                            ]
+                            [ HH.text note_enc ]
+                  ]
               ]
-          ]
         , case mb_show_editor of
             Nothing -> []
             Just show_editor ->
               [ HH.div
-                  [ HP.style "padding: 0 0.5em;" ]
-                  [ HH.button [ HE.onClick (const (Modify_ShowEditor (map not))) ] [ HH.text (if show_editor then "hide editor" else "show editor") ]
-                  ]
+                  [ HP.style "display: flex; flex-direction: row; gap: 0.5em; padding: 0 0.5em;" ]
+                  ( [ [ HH.button [ HE.onClick (const (Modify_ShowEditor (map not))) ] [ HH.text (if show_editor then "hide editor" else "show editor") ] ]
+                    , case mb_err_note of
+                        Just (Right note) -> [ HH.button [ HE.onClick (const (OpenLink (note # Mucode.encode # href_of_note_enc # (_ <> "&mode=publish")))) ] [ HH.text "publish" ] ]
+                        _ -> []
+                    ] # Array.fold
+                  )
               , HH.div
                   [ HP.style (if show_editor then "border: 0.2em solid black; padding: 0.5em;" else "display: none; ") ]
                   case mb_err_note of
@@ -129,9 +140,14 @@ component = mkComponent { initialState, eval, render }
               ]
         , case mb_err_note of
             Nothing -> []
-            Just (Left err) -> [ HH.div [ HP.style "padding: 0 0.5em;" ] [ HH.text err ] ]
+            Just (Left err) ->
+              [ HH.div
+                  [ HP.style "padding: 0 0.5em; background-color: lightpink" ]
+                  [ HH.text err ]
+              ]
             Just (Right note) ->
-              [ HH.div [ HP.style "padding: 0 0.5em;" ]
+              [ HH.div
+                  [ HP.class_ (H.ClassName "Page-Body") ]
                   [ HH.slot_ (Proxy :: Proxy "page") unit component_Page
                       { page:
                           { name: "dynamic"
@@ -142,6 +158,5 @@ component = mkComponent { initialState, eval, render }
                       }
                   ]
               ]
-        , [ HH.div [] [] ]
         ] # Array.fold
       )

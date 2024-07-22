@@ -186,7 +186,7 @@ instance Editable a => Editable (List a) where
                     [ HH.text "➕" ]
                 , HH.button
                     [ HP.style ""
-                    , HE.onClick (\_ -> Put_Action (wrap l))
+                    , HE.onClick (\_ -> Put_Action (wrap t))
                     ]
                     [ HH.text "➖" ]
                 ]
