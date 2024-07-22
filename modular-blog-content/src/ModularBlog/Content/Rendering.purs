@@ -1,9 +1,10 @@
-module ModularBlog.Common.Rendering where
+module ModularBlog.Content.Rendering where
 
 import Prelude
 
 import Control.Monad.State (evalState)
 import Data.Foldable (fold)
+import Data.Map as Map
 import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (over, unwrap)
 import Data.Traversable (sequence)
@@ -13,6 +14,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import ModularBlog.Common.Types (Group, Note(..), NoteHTML, PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
+import ModularBlog.Content.Notes (notes)
 import Web.DOM as Web.DOM
 import Web.DOM.Element as Web.DOM.Element
 import Web.DOM.Node as Web.DOM.Node
@@ -77,6 +79,9 @@ freshWidgetSlotId = do
 renderNote :: forall extra. RenderNoteExtra extra => Note extra -> RenderM (Array NoteHTML)
 renderNote = case _ of
   Literal str -> pure [ HH.span [ HP.class_ (H.ClassName "Literal") ] [ HH.text str ] ]
+  Named name -> case name `Map.lookup` notes of
+    Nothing -> pure [ HH.span [ HP.style "background-color: lightpink" ] [ HH.text ("unrecognized note name: " <> name) ] ]
+    Just note -> renderNote note
   Styled style note -> renderStyled style (note # renderNote)
   Grouped group notes -> renderGrouped group (notes # map renderNote # sequence # map fold)
   Inject a -> renderNoteInject a

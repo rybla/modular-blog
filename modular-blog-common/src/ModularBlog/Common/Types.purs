@@ -51,6 +51,7 @@ derive instance Newtype RenderNoteHTML _
 
 data Note a
   = Literal String
+  | Named String
   | Styled Style (Note a)
   | Grouped Group (List (Note a))
   | Inject a

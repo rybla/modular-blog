@@ -5,7 +5,7 @@ import Prelude
 import Effect (Effect)
 import Halogen.Aff (awaitBody, runHalogenAff)
 import Halogen.VDom.Driver (runUI)
-import ModularBlog.Common.Rendering (component_Page)
+import ModularBlog.Content.Rendering (component_Page)
 import ModularBlog.Common.Types (Page)
 
 runPage :: Page -> Effect Unit

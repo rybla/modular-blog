@@ -1,7 +1,18 @@
 module ModularBlog.Content.Notes where
 
-import ModularBlog.Common.Types (Group(..), HyperNote, Note(..))
 import Data.List as List
+import Data.Map (Map)
+import Data.Map as Map
+import Data.Tuple.Nested ((/\))
+import ModularBlog.Common.Types (Group(..), HyperNote, Note(..))
+
+-- =============================================================================
+
+notes :: Map String HyperNote
+notes = Map.fromFoldable
+  [ "loremIpsum" /\ loremIpsum ]
+
+-- =============================================================================
 
 loremIpsum :: HyperNote
 loremIpsum = Grouped Column

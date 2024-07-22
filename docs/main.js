@@ -3992,6 +3992,16 @@
   var empty2 = /* @__PURE__ */ function() {
     return Leaf.value;
   }();
+  var fromFoldable = function(dictOrd) {
+    var insert13 = insert(dictOrd);
+    return function(dictFoldable) {
+      return foldl(dictFoldable)(function(m) {
+        return function(v) {
+          return insert13(v.value0)(v.value1)(m);
+        };
+      })(empty2);
+    };
+  };
   var $$delete = function(dictOrd) {
     var compare3 = compare(dictOrd);
     return function(k) {
@@ -4845,6 +4855,9 @@
     }
     ;
     return false;
+  };
+  var fromFoldable2 = function(dictFoldable) {
+    return foldr(dictFoldable)(Cons.create)(Nil.value);
   };
 
   // output/Data.List.NonEmpty/index.js
@@ -8460,21 +8473,6 @@
     };
   };
 
-  // output/ModularBlog.Common.Rendering/foreign.js
-  var removeElementFromBodyById = (id2) => () => {
-    const e = document.getElementById(id2);
-    if (e === null) return;
-    document.body.removeChild(e);
-  };
-
-  // output/Control.Monad.State/index.js
-  var evalState = function(v) {
-    return function(s) {
-      var v1 = v(s);
-      return v1.value0;
-    };
-  };
-
   // output/ModularBlog.Common.Types/index.js
   var genericShowConstructor2 = /* @__PURE__ */ genericShowConstructor(genericShowArgsNoArguments);
   var map21 = /* @__PURE__ */ map(functorList);
@@ -8532,6 +8530,16 @@
       return new Literal2(value0);
     };
     return Literal2;
+  }();
+  var Named = /* @__PURE__ */ function() {
+    function Named2(value0) {
+      this.value0 = value0;
+    }
+    ;
+    Named2.create = function(value0) {
+      return new Named2(value0);
+    };
+    return Named2;
   }();
   var Styled = /* @__PURE__ */ function() {
     function Styled2(value0, value1) {
@@ -8600,7 +8608,7 @@
         return Code.value;
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 73, column 1 - line 73, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 74, column 1 - line 74, column 32): " + [x.constructor.name]);
     },
     from: function(x) {
       if (x instanceof Quote) {
@@ -8615,7 +8623,7 @@
         return new Inr(new Inr(NoArguments.value));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 73, column 1 - line 73, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 74, column 1 - line 74, column 32): " + [x.constructor.name]);
     }
   };
   var genericShow3 = /* @__PURE__ */ genericShow(genericStyle_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2({
@@ -8645,37 +8653,45 @@
       }
       ;
       if (x instanceof Inr && x.value0 instanceof Inl) {
-        return new Styled(x.value0.value0.value0, x.value0.value0.value1);
+        return new Named(x.value0.value0);
       }
       ;
       if (x instanceof Inr && (x.value0 instanceof Inr && x.value0.value0 instanceof Inl)) {
-        return new Grouped(x.value0.value0.value0.value0, x.value0.value0.value0.value1);
+        return new Styled(x.value0.value0.value0.value0, x.value0.value0.value0.value1);
       }
       ;
-      if (x instanceof Inr && (x.value0 instanceof Inr && x.value0.value0 instanceof Inr)) {
-        return new Inject(x.value0.value0.value0);
+      if (x instanceof Inr && (x.value0 instanceof Inr && (x.value0.value0 instanceof Inr && x.value0.value0.value0 instanceof Inl))) {
+        return new Grouped(x.value0.value0.value0.value0.value0, x.value0.value0.value0.value0.value1);
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 58, column 1 - line 58, column 35): " + [x.constructor.name]);
+      if (x instanceof Inr && (x.value0 instanceof Inr && (x.value0.value0 instanceof Inr && x.value0.value0.value0 instanceof Inr))) {
+        return new Inject(x.value0.value0.value0.value0);
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 59, column 1 - line 59, column 35): " + [x.constructor.name]);
     },
     from: function(x) {
       if (x instanceof Literal) {
         return new Inl(x.value0);
       }
       ;
-      if (x instanceof Styled) {
-        return new Inr(new Inl(new Product(x.value0, x.value1)));
+      if (x instanceof Named) {
+        return new Inr(new Inl(x.value0));
       }
       ;
-      if (x instanceof Grouped) {
+      if (x instanceof Styled) {
         return new Inr(new Inr(new Inl(new Product(x.value0, x.value1))));
       }
       ;
-      if (x instanceof Inject) {
-        return new Inr(new Inr(new Inr(x.value0)));
+      if (x instanceof Grouped) {
+        return new Inr(new Inr(new Inr(new Inl(new Product(x.value0, x.value1)))));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 58, column 1 - line 58, column 35): " + [x.constructor.name]);
+      if (x instanceof Inject) {
+        return new Inr(new Inr(new Inr(new Inr(x.value0))));
+      }
+      ;
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 59, column 1 - line 59, column 35): " + [x.constructor.name]);
     }
   };
   var generic_encode1 = /* @__PURE__ */ generic_encode(genericNote_);
@@ -8690,7 +8706,7 @@
         return Column.value;
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 88, column 1 - line 88, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 89, column 1 - line 89, column 32): " + [x.constructor.name]);
     },
     from: function(x) {
       if (x instanceof Row) {
@@ -8701,7 +8717,7 @@
         return new Inr(NoArguments.value);
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 88, column 1 - line 88, column 32): " + [x.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.Types (line 89, column 1 - line 89, column 32): " + [x.constructor.name]);
     }
   };
   var genericShow1 = /* @__PURE__ */ genericShow(genericGroup_)(/* @__PURE__ */ genericShowSum(/* @__PURE__ */ genericShowConstructor2({
@@ -8725,6 +8741,10 @@
       return function(m) {
         if (m instanceof Literal) {
           return new Literal(m.value0);
+        }
+        ;
+        if (m instanceof Named) {
+          return new Named(m.value0);
         }
         ;
         if (m instanceof Styled) {
@@ -8757,7 +8777,7 @@
   var generic_EncodeArgsProduct1 = /* @__PURE__ */ generic_EncodeArgsProduct(/* @__PURE__ */ generic_EncodeArgsArgumen(encodeGroup));
   var encodePlainNote = {
     encode: function(x) {
-      return generic_encode1(generic_EncodeSum22(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct2(generic_EncodeArgsArgumen(encodePlainNote))))(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct1(generic_EncodeArgsArgumen(encodeList(encodePlainNote)))))(generic_EncodeConstructor12))))(x);
+      return generic_encode1(generic_EncodeSum22(generic_EncodeSum22(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct2(generic_EncodeArgsArgumen(encodePlainNote))))(generic_EncodeSum(generic_EncodeConstructor(generic_EncodeArgsProduct1(generic_EncodeArgsArgumen(encodeList(encodePlainNote)))))(generic_EncodeConstructor12)))))(x);
     }
   };
   var decodeStyle = {
@@ -8774,20 +8794,53 @@
   var generic_DecodeArgsProduct1 = /* @__PURE__ */ generic_DecodeArgsProduct(/* @__PURE__ */ generic_DecodeArgsArgumen(decodeGroup));
   var decodePlainNote = {
     parse: function(x) {
-      return generic_parse1(generic_DecodeSum22(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct2(generic_DecodeArgsArgumen(decodePlainNote))))(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct1(generic_DecodeArgsArgumen(decodeList(decodePlainNote)))))(generic_DecodeConstructor12))))(x);
+      return generic_parse1(generic_DecodeSum22(generic_DecodeSum22(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct2(generic_DecodeArgsArgumen(decodePlainNote))))(generic_DecodeSum(generic_DecodeConstructor(generic_DecodeArgsProduct1(generic_DecodeArgsArgumen(decodeList(decodePlainNote)))))(generic_DecodeConstructor12)))))(x);
     }
   };
   var initialRenderNoteEnv = {
     widgetSlotId: 0
   };
 
-  // output/ModularBlog.Common.Rendering/index.js
+  // output/ModularBlog.Common.Utility/index.js
+  var fromJustE = function(dictMonadThrow) {
+    var throwError4 = throwError(dictMonadThrow);
+    var pure14 = pure(dictMonadThrow.Monad0().Applicative0());
+    return function(e) {
+      return maybe(throwError4(e))(pure14);
+    };
+  };
+
+  // output/ModularBlog.Content.Rendering/foreign.js
+  var removeElementFromBodyById = (id2) => () => {
+    const e = document.getElementById(id2);
+    if (e === null) return;
+    document.body.removeChild(e);
+  };
+
+  // output/Control.Monad.State/index.js
+  var evalState = function(v) {
+    return function(s) {
+      var v1 = v(s);
+      return v1.value0;
+    };
+  };
+
+  // output/ModularBlog.Content.Notes/index.js
+  var loremIpsum = /* @__PURE__ */ function() {
+    return new Grouped(Column.value, fromFoldable2(foldableArray)([new Literal("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consectetur a erat nam at lectus. Cursus vitae congue mauris rhoncus aenean vel. Semper quis lectus nulla at volutpat. Tortor id aliquet lectus proin nibh nisl condimentum id. Dignissim sodales ut eu sem integer vitae justo eget. Habitasse platea dictumst quisque sagittis purus. Aenean euismod elementum nisi quis. Nunc scelerisque viverra mauris in aliquam. Est velit egestas dui id ornare. Elit ullamcorper dignissim cras tincidunt lobortis. Risus feugiat in ante metus dictum at tempor. Commodo sed egestas egestas fringilla phasellus faucibus scelerisque. Morbi tincidunt augue interdum velit euismod in. Curabitur gravida arcu ac tortor dignissim convallis aenean. Porttitor rhoncus dolor purus non enim praesent. Velit euismod in pellentesque massa placerat duis ultricies lacus. Adipiscing tristique risus nec feugiat in fermentum."), new Literal("Ut tellus elementum sagittis vitae et leo. Cursus mattis molestie a iaculis at erat pellentesque. Quam adipiscing vitae proin sagittis nisl rhoncus. Tempor id eu nisl nunc mi ipsum faucibus vitae. Vulputate eu scelerisque felis imperdiet proin. Aliquet nibh praesent tristique magna sit amet. Ac auctor augue mauris augue neque gravida. Libero justo laoreet sit amet cursus sit amet dictum. Cursus metus aliquam eleifend mi in. Velit laoreet id donec ultrices tincidunt arcu. Netus et malesuada fames ac turpis egestas. Sit amet dictum sit amet justo donec. Nunc non blandit massa enim nec. Leo integer malesuada nunc vel risus commodo viverra maecenas accumsan. Velit dignissim sodales ut eu sem. Dignissim suspendisse in est ante in."), new Literal("Consectetur purus ut faucibus pulvinar elementum. Aenean et tortor at risus viverra adipiscing at. Neque vitae tempus quam pellentesque nec nam. Ac placerat vestibulum lectus mauris ultrices eros. Elementum eu facilisis sed odio morbi quis commodo odio. Sem viverra aliquet eget sit amet. Placerat vestibulum lectus mauris ultrices. Mollis aliquam ut porttitor leo a diam sollicitudin tempor. Proin nibh nisl condimentum id venenatis a condimentum vitae sapien. Facilisi morbi tempus iaculis urna id volutpat lacus laoreet. Cursus mattis molestie a iaculis at erat pellentesque adipiscing commodo. Id aliquet lectus proin nibh nisl condimentum id venenatis a."), new Literal("Vestibulum sed arcu non odio euismod. Sed vulputate mi sit amet mauris commodo quis. Quam elementum pulvinar etiam non quam lacus suspendisse faucibus. Ut consequat semper viverra nam. Tristique senectus et netus et malesuada fames ac turpis egestas. Aenean pharetra magna ac placerat vestibulum lectus mauris. Imperdiet sed euismod nisi porta lorem mollis aliquam. Posuere morbi leo urna molestie at elementum. Enim sed faucibus turpis in eu mi bibendum neque egestas. Eget nunc scelerisque viverra mauris in aliquam sem fringilla ut. Nunc aliquet bibendum enim facilisis. Egestas erat imperdiet sed euismod. Blandit aliquam etiam erat velit scelerisque in dictum non consectetur. Massa tincidunt nunc pulvinar sapien et ligula ullamcorper."), new Literal("Proin libero nunc consequat interdum. Pretium quam vulputate dignissim suspendisse in est. Lorem sed risus ultricies tristique nulla aliquet enim. Ac placerat vestibulum lectus mauris. Ut aliquam purus sit amet luctus venenatis lectus. Eget mauris pharetra et ultrices neque ornare aenean euismod. Tempor commodo ullamcorper a lacus vestibulum sed arcu non. Tincidunt nunc pulvinar sapien et ligula. Quam quisque id diam vel quam elementum pulvinar etiam non. Vestibulum lorem sed risus ultricies tristique nulla aliquet enim tortor. Tellus orci ac auctor augue mauris augue. Tempus imperdiet nulla malesuada pellentesque. Vulputate dignissim suspendisse in est ante in nibh mauris. Libero nunc consequat interdum varius sit amet mattis vulputate enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames. Sed felis eget velit aliquet sagittis.")]));
+  }();
+  var notes = /* @__PURE__ */ function() {
+    return fromFoldable(ordString)(foldableArray)([new Tuple("loremIpsum", loremIpsum)]);
+  }();
+
+  // output/ModularBlog.Content.Rendering/index.js
   var bindStateT2 = /* @__PURE__ */ bindStateT(monadIdentity);
   var bind7 = /* @__PURE__ */ bind(bindStateT2);
   var applicativeStateT2 = /* @__PURE__ */ applicativeStateT(monadIdentity);
   var pure11 = /* @__PURE__ */ pure(applicativeStateT2);
   var show4 = /* @__PURE__ */ show(showStyle);
   var show13 = /* @__PURE__ */ show(showGroup);
+  var lookup6 = /* @__PURE__ */ lookup(ordString);
   var map23 = /* @__PURE__ */ map(/* @__PURE__ */ functorStateT(functorIdentity));
   var fold3 = /* @__PURE__ */ fold(foldableList)(monoidArray);
   var sequence2 = /* @__PURE__ */ sequence(traversableList)(applicativeStateT2);
@@ -8827,6 +8880,19 @@
         return pure11([span3([class_("Literal")])([text5(v.value0)])]);
       }
       ;
+      if (v instanceof Named) {
+        var v1 = lookup6(v.value0)(notes);
+        if (v1 instanceof Nothing) {
+          return pure11([span3([style("background-color: lightpink")])([text5("unrecognized note name: " + v.value0)])]);
+        }
+        ;
+        if (v1 instanceof Just) {
+          return renderNote(renderNoteExtraRenderNote)(v1.value0);
+        }
+        ;
+        throw new Error("Failed pattern match at ModularBlog.Content.Rendering (line 82, column 17 - line 84, column 33): " + [v1.constructor.name]);
+      }
+      ;
       if (v instanceof Styled) {
         return renderStyled(v.value0)(renderNote(dictRenderNoteExtra)(v.value1));
       }
@@ -8839,7 +8905,7 @@
         return renderNoteInject1(v.value0);
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Rendering (line 78, column 14 - line 82, column 33): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Content.Rendering (line 80, column 14 - line 87, column 33): " + [v.constructor.name]);
     };
   };
   var renderNote1 = /* @__PURE__ */ renderNote(renderNoteExtraRenderNote);
@@ -8863,14 +8929,14 @@
         return put2(initialState(v.value0));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.Rendering (line 37, column 18 - line 41, column 59): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Content.Rendering (line 39, column 18 - line 43, column 59): " + [v.constructor.name]);
     };
     var $$eval = mkEval({
       handleQuery: defaultEval.handleQuery,
       finalize: defaultEval.finalize,
       initialize: new Just(Initialize_PageAction.value),
-      receive: function($66) {
-        return Just.create(Receive_PageAction.create($66));
+      receive: function($71) {
+        return Just.create(Receive_PageAction.create($71));
       },
       handleAction
     });
@@ -8880,15 +8946,6 @@
       render
     });
   }();
-
-  // output/ModularBlog.Common.Utility/index.js
-  var fromJustE = function(dictMonadThrow) {
-    var throwError4 = throwError(dictMonadThrow);
-    var pure14 = pure(dictMonadThrow.Monad0().Applicative0());
-    return function(e) {
-      return maybe(throwError4(e))(pure14);
-    };
-  };
 
   // output/Web.URL.URLSearchParams/foreign.js
   function urlSearchParamsImpl(x) {
@@ -8977,7 +9034,7 @@
           return a([href4("/?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc)))])([text5(note_enc)]);
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 92, column 17 - line 99, column 166): " + [v.mb_err_note.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 95, column 17 - line 102, column 166): " + [v.mb_err_note.constructor.name]);
       }()])], function() {
         if (v.mb_show_editor instanceof Nothing) {
           return [];
@@ -8999,7 +9056,7 @@
           }())])([text5("editor")])];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 103, column 11 - line 112, column 16): " + [v.mb_show_editor.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 106, column 11 - line 115, column 16): " + [v.mb_show_editor.constructor.name]);
       }(), function() {
         if (v.mb_err_note instanceof Nothing) {
           return [];
@@ -9020,13 +9077,13 @@
           })];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 114, column 11 - line 126, column 16): " + [v.mb_err_note.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 117, column 11 - line 129, column 16): " + [v.mb_err_note.constructor.name]);
       }()]));
     };
     var initialState = function(v) {
       return {
         mb_show_editor: new Just(false),
-        mb_err_note: new Just(new Right(new Literal("hello world!")))
+        mb_err_note: new Just(new Right(new Named("loremIpsum")))
       };
     };
     var handleAction = function(v) {
@@ -9047,16 +9104,16 @@
                         if (v2 instanceof Left) {
                           return discard8(log4("failure when decoding ?content value"))(function() {
                             return modify_3(function(v3) {
-                              var $57 = {};
-                              for (var $58 in v3) {
-                                if ({}.hasOwnProperty.call(v3, $58)) {
-                                  $57[$58] = v3[$58];
+                              var $58 = {};
+                              for (var $59 in v3) {
+                                if ({}.hasOwnProperty.call(v3, $59)) {
+                                  $58[$59] = v3[$59];
                                 }
                                 ;
                               }
                               ;
-                              $57.mb_err_note = new Just(new Left(show5(v2.value0)));
-                              return $57;
+                              $58.mb_err_note = new Just(new Left(show5(v2.value0)));
+                              return $58;
                             });
                           });
                         }
@@ -9064,45 +9121,60 @@
                         if (v2 instanceof Right) {
                           return discard8(log4("success when decoding ?content value"))(function() {
                             return modify_3(function(v3) {
-                              var $61 = {};
-                              for (var $62 in v3) {
-                                if ({}.hasOwnProperty.call(v3, $62)) {
-                                  $61[$62] = v3[$62];
+                              var $62 = {};
+                              for (var $63 in v3) {
+                                if ({}.hasOwnProperty.call(v3, $63)) {
+                                  $62[$63] = v3[$63];
                                 }
                                 ;
                               }
                               ;
-                              $61.mb_err_note = new Just(new Right(v2.value0));
-                              return $61;
+                              $62.mb_err_note = new Just(new Right(v2.value0));
+                              return $62;
                             });
                           });
                         }
                         ;
-                        throw new Error("Failed pattern match at ModularBlog.App.Index (line 75, column 11 - line 81, column 62): " + [v2.constructor.name]);
+                        throw new Error("Failed pattern match at ModularBlog.App.Index (line 77, column 11 - line 83, column 62): " + [v2.constructor.name]);
                       });
                     });
                   }
                   ;
-                  throw new Error("Failed pattern match at ModularBlog.App.Index (line 70, column 53 - line 81, column 62): " + [v1.constructor.name]);
+                  throw new Error("Failed pattern match at ModularBlog.App.Index (line 72, column 53 - line 83, column 62): " + [v1.constructor.name]);
                 }(get3("content")(usp)))(function() {
                   return function(v1) {
-                    if (v1 instanceof Just && v1.value0 === "disable") {
+                    if (v1 instanceof Just && v1.value0 === "publish") {
                       return modify_3(function(v2) {
-                        var $67 = {};
-                        for (var $68 in v2) {
-                          if ({}.hasOwnProperty.call(v2, $68)) {
-                            $67[$68] = v2[$68];
+                        var $68 = {};
+                        for (var $69 in v2) {
+                          if ({}.hasOwnProperty.call(v2, $69)) {
+                            $68[$69] = v2[$69];
                           }
                           ;
                         }
                         ;
-                        $67.mb_show_editor = Nothing.value;
-                        return $67;
+                        $68.mb_show_editor = Nothing.value;
+                        return $68;
+                      });
+                    }
+                    ;
+                    if (v1 instanceof Just && v1.value0 === "draft") {
+                      return modify_3(function(v2) {
+                        var $72 = {};
+                        for (var $73 in v2) {
+                          if ({}.hasOwnProperty.call(v2, $73)) {
+                            $72[$73] = v2[$73];
+                          }
+                          ;
+                        }
+                        ;
+                        $72.mb_show_editor = new Just(false);
+                        return $72;
                       });
                     }
                     ;
                     return pure13(unit);
-                  }(get3("editor")(usp));
+                  }(get3("mode")(usp));
                 });
               });
             });
@@ -9114,7 +9186,7 @@
         return modify_3(prop4(_mb_show_editor)(strongFn)(v.value0));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.App.Index (line 64, column 18 - line 85, column 62): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.App.Index (line 66, column 18 - line 88, column 62): " + [v.constructor.name]);
     };
     var $$eval = mkEval({
       handleQuery: defaultEval.handleQuery,

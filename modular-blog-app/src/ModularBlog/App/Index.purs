@@ -20,9 +20,9 @@ import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 import JSURI as JSURI
 import ModularBlog.Common.Mucode as Mucode
-import ModularBlog.Common.Rendering (component_Page)
 import ModularBlog.Common.Types (Note(..), PlainNote)
 import ModularBlog.Common.Utility (fromJustE)
+import ModularBlog.Content.Rendering (component_Page)
 import Type.Prelude (Proxy(..))
 import Web.HTML as Web.HTML
 import Web.HTML.Location as Web.HTML.Location
@@ -56,7 +56,9 @@ component = mkComponent { initialState, eval, render }
   initialState :: Input -> State
   initialState _ =
     { mb_show_editor: Just false
-    , mb_err_note: Just (Right (Literal "hello world!"))
+    -- , mb_err_note: Nothing
+    -- , mb_err_note: Just (Right (Literal "hello world!"))
+    , mb_err_note: Just (Right (Named "loremIpsum"))
     }
 
   eval = mkEval defaultEval { initialize = Just Initialize, handleAction = handleAction }
