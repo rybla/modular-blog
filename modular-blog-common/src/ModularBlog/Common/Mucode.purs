@@ -10,6 +10,7 @@ import Data.Array.ST as Array.ST
 import Data.Either.Nested (type (\/))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from, to)
 import Data.List (List(..))
+import Data.Maybe (Maybe(..))
 import Data.String as String
 import Data.String.CodePoints (codePointFromChar)
 import Parsing (ParseError(..), ParserT, position, runParserT)
@@ -65,10 +66,6 @@ instance Decode String where
     cps' <- cps # Array.ST.unsafeFreeze # lift
     pure (cps' # String.fromCodePointArray)
 
--- pure _ = STArray
---   where 
---   go = 
-
 instance Encode Void where
   encode = absurd
 
@@ -77,13 +74,45 @@ instance Decode Void where
     pos <- position
     throwError (ParseError "cannot parse a term of type Void since no such term exists" pos)
 
+type Rep_Boolean = Sum Rep_false Rep_true
+type Rep_false = Constructor "false" NoArguments
+type Rep_true = Constructor "true" NoArguments
+
+instance Encode Boolean where
+  encode = case _ of
+    false -> generic_encode' (Inl (Constructor NoArguments) :: Rep_Boolean)
+    true -> generic_encode' (Inl (Constructor NoArguments) :: Rep_Boolean)
+
+instance Decode Boolean where
+  parse _ = (generic_parse' unit :: Parser Rep_Boolean) >>= case _ of
+    Inl _false -> pure false
+    Inr _true -> pure true
+
+type Rep_Maybe a = Sum Rep_Nothing (Rep_Just a)
+type Rep_Nothing = Constructor "Nothing" NoArguments
+type Rep_Just a = Constructor "Just" (Argument a)
+
+instance Encode a => Encode (Maybe a) where
+  encode = case _ of
+    Nothing -> generic_encode' (Inl (Constructor NoArguments) :: Rep_Maybe a)
+    Just a -> generic_encode' (Inr (Constructor (Argument a)) :: Rep_Maybe a)
+
+instance Decode a => Decode (Maybe a) where
+  parse _ = (generic_parse' unit :: Parser (Rep_Maybe a)) >>= case _ of
+    Inl _Nothing -> pure Nothing
+    Inr (Constructor (Argument a)) -> pure (Just a)
+
+type Rep_List a = Sum Rep_Nil (Rep_Cons a)
+type Rep_Nil = Constructor "Nil" NoArguments
+type Rep_Cons a = Constructor "Cons" (Product (Argument a) (Argument (List a)))
+
 instance Encode a => Encode (List a) where
   encode = case _ of
-    Nil -> generic_encode' (Constructor NoArguments :: Constructor "Nil" _)
-    Cons h t -> generic_encode' (Constructor (Product (Argument h) (Argument t)) :: Constructor "Cons" _)
+    Nil -> generic_encode' (Inl (Constructor NoArguments) :: Rep_List a)
+    Cons h t -> generic_encode' (Inr (Constructor (Product (Argument h) (Argument t))) :: Rep_List a)
 
 instance Decode a => Decode (List a) where
-  parse _ = (generic_parse' unit :: Parser (Sum (Constructor "Nil" NoArguments) (Constructor "Cons" (Product (Argument a) (Argument (List a)))))) >>= case _ of
+  parse _ = (generic_parse' unit :: Parser (Rep_List a)) >>= case _ of
     Inl _nil -> pure Nil
     Inr (Constructor (Product (Argument h) (Argument t))) -> pure (Cons h t)
 
