@@ -7861,7 +7861,7 @@
           return g(v.value0);
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 265, column 13 - line 267, column 15): " + [v.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 264, column 13 - line 266, column 15): " + [v.constructor.name]);
       };
     };
   };
@@ -7968,7 +7968,7 @@
               })(v.value0);
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 256, column 26 - line 258, column 46): " + [v.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 255, column 26 - line 257, column 46): " + [v.constructor.name]);
           };
         },
         "generic_renderOptions'": function(mb_sum) {
@@ -8088,7 +8088,7 @@
               })(l.value1)]);
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 167, column 14 - line 195, column 14): " + [l.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 166, column 14 - line 194, column 14): " + [l.constructor.name]);
           }();
           return new Tuple([new Tuple("List", new Tuple(true, defer3(function(v) {
             return wrap3(l);
@@ -8164,7 +8164,7 @@
         return put2(initialState(v.value0));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 62, column 18 - line 66, column 55): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.Common.MuEditor (line 61, column 18 - line 65, column 55): " + [v.constructor.name]);
     };
     var $$eval = mkEval({
       initialize: defaultEval.initialize,
