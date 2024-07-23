@@ -61,6 +61,7 @@ data Note a
   | Styled Style (Note a)
   | Grouped Group (List (Note a))
   | Image ImageSize ImageStyle String
+  | Link String String
   | Inject a
 
 derive instance Generic (Note a) _
@@ -121,6 +122,7 @@ instance MuEditor.Editable Style where
 data Group
   = Column
   | Row
+  | Inline
 
 derive instance Generic Group _
 
@@ -140,6 +142,7 @@ instance MuEditor.Editable Group where
 data ImageSize
   = FillWidth_ImageSize
   | Actual_ImageSize
+  | FixedWith_ImageSize Int
 
 derive instance Generic ImageSize _
 

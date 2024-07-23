@@ -4,39 +4,6 @@ body {
   padding: 0;
 }
 
-/* Editable */
-
-.Editable-Constructor {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
-
-.Editable-Args {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  padding-left: 0.4em;
-  border-left: 0.2em solid black;
-}
-
-.Editable-Unit {}
-
-.Editable-Int {}
-
-.Editable-Boolean {}
-
-.Editable-String {
-  width: calc(100% - 0.5em);
-  resize: vertical;
-}
-
-.Editable-List-Cons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
-
 /* Page */
 
 .Page-Body {
@@ -47,6 +14,13 @@ body {
 }
 
 /* Note */
+
+.Hole {
+  width: 1em;
+  height: 1em;
+  background-color: orange;
+  white-space: pre;
+}
 
 /* Note Group */
 
@@ -63,6 +37,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.Inline>* {
+  display: inline;
 }
 
 /* Note Style */
@@ -76,11 +57,14 @@ body {
   padding: 0.5em;
   box-shadow: 0 0 0.8em 0.1em black;
   border-radius: 0.5em;
+  overflow-x: scroll;
 }
 
 .Code {
   font-family: 'Courier New', Courier, monospace;
   white-space: pre;
+  /* background-color: darkseagreen; */
+  padding: 0 0.2em;
 }
 
 .Title {
@@ -114,4 +98,37 @@ body {
   margin: 0.5em;
   width: calc(100% - 1em);
   box-shadow: 0 0 1em 0.1em black;
+}
+
+/* Editable */
+
+.Editable-Constructor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.Editable-Args {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding-left: 0.4em;
+  border-left: 0.2em solid black;
+}
+
+.Editable-Unit {}
+
+.Editable-Int {}
+
+.Editable-Boolean {}
+
+.Editable-String {
+  width: calc(100% - 0.5em);
+  resize: vertical;
+}
+
+.Editable-List-Cons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }

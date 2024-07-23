@@ -35,6 +35,7 @@ repo_url = "https://github.com/rybla/modular-blog"
 
 root_url :: String
 root_url = "https://rybla.github.io/modular-blog"
+-- root_url = "/"
 
 main :: Effect Unit
 main = runHalogenAff (runUI component {} =<< awaitBody)

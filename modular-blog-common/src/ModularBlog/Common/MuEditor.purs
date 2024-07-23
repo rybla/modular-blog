@@ -3,13 +3,16 @@ module ModularBlog.Common.MuEditor where
 
 import Prelude
 
+import DOM.HTML.Indexed.InputType as DOM.HTML.Indexed.InputType
 import Data.Array as Array
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from, to)
+import Data.Int as Int
 import Data.Lazy (Lazy)
 import Data.Lazy as Lazy
 import Data.List (List(..))
 import Data.Maybe (Maybe(..), isJust, maybe')
 import Data.Tuple.Nested (type (/\), (/\))
+import Debug as Debug
 import Effect.Aff (Aff)
 import Effect.Unsafe as Effect.Unsafe
 import Halogen (HalogenM)
@@ -35,7 +38,7 @@ data Output e = Updated e
 
 type State e = { val :: e }
 
-data Action e = Put_Action e | Receive_Action (Input e)
+data Action e = Put_Action e | Receive_Action (Input e) | Pass
 
 type Slots :: Row Type
 type Slots = ()
@@ -59,6 +62,7 @@ component = H.mkComponent { initialState, eval, render: renderComponent }
 
   handleAction :: Action e -> HalogenM (State e) (Action e) Slots (Output e) Aff Unit
   handleAction = case _ of
+    Pass -> pure unit
     Put_Action val -> do
       H.modify_ _ { val = val }
       H.raise (Updated val)
@@ -128,7 +132,21 @@ instance Editable Unit where
 instance Editable Int where
   render' wrap i =
     [ "Int" /\ true /\ (Lazy.defer \_ -> wrap i) ] /\
-      [ HH.div [ HP.class_ (H.ClassName "Editable-Int") ] [ HH.text (show i) ] ]
+      [ HH.input
+          [ HP.class_ (H.ClassName "Editable-Int")
+          , HP.type_ DOM.HTML.Indexed.InputType.InputNumber
+          , HP.value (show i)
+          , HE.onValueChange
+              ( \s -> Put_Action
+                  ( wrap
+                      ( s
+                          # Int.fromString
+                          # maybe' (\_ -> unsafeCrashWith "type=number should ensure this is always an Int") identity
+                      )
+                  )
+              )
+          ]
+      ]
   default _ = 0
 
 instance Editable Boolean where
@@ -244,7 +262,6 @@ instance Generic_Editable NoConstructors where
   generic_default' v = generic_default' v
 
 instance (IsSymbol name, GenericArgs_Editable a) => Generic_Editable (Constructor name a) where
-  -- generic_render' wrap (Constructor a) = HH.div [ HP.class_ (H.ClassName "Editable-Constructor") ] (genericArgs_render (wrap <<< Constructor) a)
   generic_render' wrap (Constructor a) = genericArgs_render (wrap <<< Constructor) a
   generic_renderOptions' mb_a wrap = [ name /\ isJust mb_a /\ (Lazy.defer \_ -> wrap (generic_default' (Proxy :: Proxy (Constructor name a)))) ]
     where

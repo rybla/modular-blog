@@ -3,6 +3,7 @@ module ModularBlog.Content.Rendering where
 import Prelude
 
 import Control.Monad.State (evalState)
+import Data.Array as Array
 import Data.Foldable (fold)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), maybe)
@@ -13,7 +14,7 @@ import Effect.Aff (Aff, error, throwError)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import ModularBlog.Common.Types (Group, Note(..), NoteHTML, NoteName(..), PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
+import ModularBlog.Common.Types (Group(..), ImageSize(..), Note(..), NoteHTML, NoteName(..), PageAction(..), PageInput, PageOutput, PageQuery, RenderM, RenderNoteHTML, Style, WidgetSlotId(..), initialRenderNoteEnv)
 import ModularBlog.Content.Notes (notes)
 import Web.DOM as Web.DOM
 import Web.DOM.Element as Web.DOM.Element
@@ -78,7 +79,7 @@ freshWidgetSlotId = do
 
 renderNote :: forall extra. RenderNoteExtra extra => Note extra -> RenderM (Array NoteHTML)
 renderNote = case _ of
-  Hole -> pure [ HH.span [ HP.class_ (H.ClassName "Hole") ] [] ]
+  Hole -> pure [ HH.span [ HP.class_ (H.ClassName "Hole") ] [ HH.text " " ] ]
   Literal str -> pure [ HH.span [ HP.class_ (H.ClassName "Literal") ] [ HH.text str ] ]
   Named (NoteName name) -> case name `Map.lookup` notes of
     Nothing | name == "" -> pure []
@@ -86,7 +87,10 @@ renderNote = case _ of
     Just note -> renderNote note
   Styled style note -> renderStyled style (note # renderNote)
   Grouped group notes -> renderGrouped group (notes # map renderNote # sequence # map fold)
-  Image size style src -> pure [ HH.img [ HP.classes [ H.ClassName "Image", H.ClassName (show size), H.ClassName (show style) ], HP.src src ] ]
+  Image size style src -> case size of
+    FixedWith_ImageSize n -> pure [ HH.img [ HP.classes [ H.ClassName "Image", H.ClassName "FixedWith", H.ClassName (show style) ], HP.style ("width: " <> show n <> "em;"), HP.src src ] ]
+    _ -> pure [ HH.img [ HP.classes [ H.ClassName "Image", H.ClassName (show size), H.ClassName (show style) ], HP.src src ] ]
+  Link href label -> pure [ HH.a [ HP.class_ (H.ClassName "Link"), HP.href href ] [ HH.text label ] ]
   Inject a -> renderNoteInject a
 
 renderStyled :: Style -> RenderM (Array NoteHTML) -> RenderM (Array NoteHTML)
@@ -101,6 +105,9 @@ renderStyled style m_hs =
 renderGrouped :: Group -> RenderM (Array NoteHTML) -> RenderM (Array NoteHTML)
 renderGrouped group m_hs =
   case group of
+    Inline -> do
+      hs <- m_hs
+      pure [ HH.div [ HP.class_ (H.ClassName (show group)) ] (hs # Array.foldMap (\h -> [ h, HH.span [ HP.style "white-space: pre" ] [ HH.text " " ] ])) ]
     _ -> use_css_class
   where
   use_css_class = do

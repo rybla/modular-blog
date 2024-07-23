@@ -7,14 +7,18 @@ import Control.Monad.ST (ST)
 import Control.Monad.ST as ST
 import Control.Monad.Trans.Class (lift)
 import Data.Array.ST as Array.ST
+import Data.Either (Either(..))
 import Data.Either.Nested (type (\/))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from, to)
+import Data.Int as Int
 import Data.List (List(..))
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), maybe, maybe')
 import Data.String as String
 import Data.String.CodePoints (codePointFromChar)
 import Parsing (ParseError(..), ParserT, position, runParserT)
-import Parsing.Combinators ((<|>))
+import Parsing as Parsing
+import Parsing.Combinators (choice, try, (<|>))
+import Parsing.Combinators as Parsing.Combinators
 import Parsing.String (anyCodePoint, string)
 import Partial.Unsafe (unsafeCrashWith)
 
@@ -73,6 +77,24 @@ instance Decode Void where
   parse _ = do
     pos <- position
     throwError (ParseError "cannot parse a term of type Void since no such term exists" pos)
+
+instance Encode Int where
+  encode i = show i <> "Int"
+
+instance Decode Int where
+  parse _ = do
+    cps <- Array.ST.new # lift
+    let
+      go = do
+        cp <- anyCodePoint
+        cps # Array.ST.push cp # lift # void
+        Parsing.Combinators.optionMaybe (string "Int") >>= case _ of
+          Nothing -> go
+          Just _ -> pure unit
+    go
+    s <- cps # Array.ST.unsafeFreeze # lift # map String.fromCodePointArray
+    pos <- position
+    s # Int.fromString # maybe (throwError (ParseError ("couldn't parse Int from: " <> s) pos)) pure
 
 type Rep_Boolean = Sum Rep_false Rep_true
 type Rep_false = Constructor "false" NoArguments
