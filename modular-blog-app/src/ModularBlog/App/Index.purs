@@ -120,7 +120,7 @@ component = mkComponent { initialState, eval, render }
                           note_enc = note # Mucode.encode
                         in
                           HH.a
-                            [ HP.href (root_url <> "?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component"))
+                            [ HP.href (href_of_note_enc note_enc)
                             ]
                             [ HH.text note_enc ]
                   ]

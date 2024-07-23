@@ -10751,7 +10751,7 @@
     };
     return OpenLink2;
   }();
-  var root_url = "/";
+  var root_url = "https://rybla.github.io/modular-blog";
   var repo_url = "https://github.com/rybla/modular-blog";
   var _mb_show_editor = /* @__PURE__ */ function() {
     return $$Proxy.value;
@@ -10787,7 +10787,7 @@
             ;
             if (v.mb_err_note instanceof Just && v.mb_err_note.value0 instanceof Right) {
               var note_enc = encode2(v.mb_err_note.value0.value0);
-              return a([href4(root_url + ("?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc))))])([text5(note_enc)]);
+              return a([href4(href_of_note_enc(note_enc))])([text5(note_enc)]);
             }
             ;
             throw new Error("Failed pattern match at ModularBlog.App.Index (line 115, column 21 - line 125, column 49): " + [v.mb_err_note.constructor.name]);
