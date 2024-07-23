@@ -10287,6 +10287,8 @@
     };
     return OpenLink2;
   }();
+  var root_url = "https://rybla.github.io/modular-blog";
+  var repo_url = "https://github.com/rybla/modular-blog";
   var _mb_show_editor = /* @__PURE__ */ function() {
     return $$Proxy.value;
   }();
@@ -10301,10 +10303,10 @@
       };
     };
     var href_of_note_enc = function(note_enc) {
-      return "/?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc));
+      return root_url + ("?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc)));
     };
     var render2 = function(v) {
-      return div2([style("display: flex; flex-direction: column; gap: 0.5em; padding: 1em 0")])(fold5([function() {
+      return div2([style("display: flex; flex-direction: column; gap: 0.5em; padding: 1em 0")])(fold5([[div2([style("padding: 0 0.5em;")])([a([href4(repo_url)])([text5("repository")])])], function() {
         if (v.mb_show_editor instanceof Nothing) {
           return [];
         }
@@ -10321,14 +10323,14 @@
             ;
             if (v.mb_err_note instanceof Just && v.mb_err_note.value0 instanceof Right) {
               var note_enc = encode2(v.mb_err_note.value0.value0);
-              return a([href4("/?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc)))])([text5(note_enc)]);
+              return a([href4(root_url + ("?content=" + fromMaybe("failure when encoding URI component")($$encodeURIComponent(note_enc))))])([text5(note_enc)]);
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.App.Index (line 107, column 21 - line 117, column 49): " + [v.mb_err_note.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.App.Index (line 114, column 21 - line 124, column 49): " + [v.mb_err_note.constructor.name]);
           }()])];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 102, column 11 - line 119, column 16): " + [v.mb_show_editor.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 109, column 11 - line 126, column 16): " + [v.mb_show_editor.constructor.name]);
       }(), function() {
         if (v.mb_show_editor instanceof Nothing) {
           return [];
@@ -10372,11 +10374,11 @@
               })];
             }
             ;
-            throw new Error("Failed pattern match at ModularBlog.App.Index (line 133, column 19 - line 139, column 24): " + [v.mb_err_note.constructor.name]);
+            throw new Error("Failed pattern match at ModularBlog.App.Index (line 140, column 19 - line 146, column 24): " + [v.mb_err_note.constructor.name]);
           }())];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 120, column 11 - line 140, column 16): " + [v.mb_show_editor.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 127, column 11 - line 147, column 16): " + [v.mb_show_editor.constructor.name]);
       }(), function() {
         if (v.mb_err_note instanceof Nothing) {
           return [];
@@ -10397,7 +10399,7 @@
           })])];
         }
         ;
-        throw new Error("Failed pattern match at ModularBlog.App.Index (line 141, column 11 - line 160, column 16): " + [v.mb_err_note.constructor.name]);
+        throw new Error("Failed pattern match at ModularBlog.App.Index (line 148, column 11 - line 167, column 16): " + [v.mb_err_note.constructor.name]);
       }()]));
     };
     var handleAction = function(v) {
@@ -10449,12 +10451,12 @@
                           });
                         }
                         ;
-                        throw new Error("Failed pattern match at ModularBlog.App.Index (line 80, column 11 - line 86, column 62): " + [v2.constructor.name]);
+                        throw new Error("Failed pattern match at ModularBlog.App.Index (line 86, column 11 - line 92, column 62): " + [v2.constructor.name]);
                       });
                     });
                   }
                   ;
-                  throw new Error("Failed pattern match at ModularBlog.App.Index (line 75, column 53 - line 86, column 62): " + [v1.constructor.name]);
+                  throw new Error("Failed pattern match at ModularBlog.App.Index (line 81, column 53 - line 92, column 62): " + [v1.constructor.name]);
                 }(get3("content")(usp)))(function() {
                   return function(v1) {
                     if (v1 instanceof Just && v1.value0 === "publish") {
@@ -10508,7 +10510,7 @@
         return $$void9(liftEffect8(bindFlipped9(open(v.value0)("_self")(""))(windowImpl)));
       }
       ;
-      throw new Error("Failed pattern match at ModularBlog.App.Index (line 69, column 18 - line 93, column 100): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at ModularBlog.App.Index (line 75, column 18 - line 99, column 100): " + [v.constructor.name]);
     };
     var $$eval = mkEval({
       handleQuery: defaultEval.handleQuery,

@@ -30,6 +30,12 @@ import Web.HTML.Location as Web.HTML.Location
 import Web.HTML.Window as Web.HTML.Window
 import Web.URL.URLSearchParams as Web.URL.URLSearchParams
 
+repo_url :: String
+repo_url = "https://github.com/rybla/modular-blog"
+
+root_url :: String
+root_url = "https://rybla.github.io/modular-blog"
+
 main :: Effect Unit
 main = runHalogenAff (runUI component {} =<< awaitBody)
 
@@ -93,13 +99,14 @@ component = mkComponent { initialState, eval, render }
     OpenLink url -> (Web.HTML.Window.open url "_self" "" =<< Web.HTML.window) # H.liftEffect # void
 
   href_of_note_enc :: String -> String
-  href_of_note_enc note_enc = "/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component")
+  href_of_note_enc note_enc = root_url <> "?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component")
 
   render :: State -> _
   render { mb_show_editor, mb_err_note } =
     HH.div
       [ HP.style "display: flex; flex-direction: column; gap: 0.5em; padding: 1em 0" ]
-      ( [ case mb_show_editor of
+      ( [ [ HH.div [ HP.style "padding: 0 0.5em;" ] [ HH.a [ HP.href repo_url ] [ HH.text "repository" ] ] ]
+        , case mb_show_editor of
             Nothing -> []
             Just _ ->
               [ HH.div
@@ -112,7 +119,7 @@ component = mkComponent { initialState, eval, render }
                           note_enc = note # Mucode.encode
                         in
                           HH.a
-                            [ HP.href ("/?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component"))
+                            [ HP.href (root_url <> "?content=" <> (note_enc # JSURI.encodeURIComponent # fromMaybe "failure when encoding URI component"))
                             ]
                             [ HH.text note_enc ]
                   ]
